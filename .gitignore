@@ -1,0 +1,35 @@
+# Environment & Secrets
+.env
+*.env
+
+# Python & Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite
+*.sqlite3
+aymnedu.db
+
+# Node & Frontend Dependencies
+node_modules/
+frontend/node_modules/
+frontend/dist/
+dist/
+.vite/
+.eslintcache
+
+# Logs & Temporary Files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
