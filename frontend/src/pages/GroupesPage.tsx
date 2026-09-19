@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { groupesApi, enseignantsApi, elevesApi } from '@/api'
-import type { Groupe, Eleve } from '@/types'
+import type { Groupe } from '@/types'
 import { BookOpen, Users, PlusCircle, Pencil, UserPlus, X, Trash2, Search } from 'lucide-react'
 
 const NIVEAUX = ['1AP','2AP','3AP','4AP','5AP','1AM','2AM','3AM','4AM','1AS','2AS','3AS','Langues']
