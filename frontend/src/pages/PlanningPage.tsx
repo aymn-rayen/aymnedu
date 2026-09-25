@@ -11,14 +11,14 @@ import { emploisApi, groupesApi, enseignantsApi } from '@/api'
 import { PlusCircle } from 'lucide-react'
 
 const JOURS: Record<string, number> = {
-  lundi: 1, mardi: 2, mercredi: 3, jeudi: 4, vendredi: 5, samedi: 6,
+  dimanche: 0, lundi: 1, mardi: 2, mercredi: 3, jeudi: 4, vendredi: 5, samedi: 6,
 }
 
 const schema = z.object({
   groupe_id: z.coerce.number().min(1, 'Requis'),
   enseignant_id: z.coerce.number().optional().nullable(),
   salle: z.string().optional(),
-  jour_semaine: z.enum(['lundi','mardi','mercredi','jeudi','vendredi','samedi'], { required_error: 'Requis' }),
+  jour_semaine: z.enum(['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'], { required_error: 'Requis' }),
   heure_debut: z.string().min(1, 'Requis'),
   heure_fin: z.string().min(1, 'Requis'),
 })
@@ -138,7 +138,9 @@ export default function PlanningPage() {
             </div>
           </form>
           {createMutation.isError && (
-            <p className="text-xs text-red-400 mt-2">Erreur lors de la création. Vérifiez les champs.</p>
+            <p className="text-xs text-red-400 mt-2 font-medium">
+              {(createMutation.error as any)?.response?.data?.detail || "Erreur lors de la création de la séance."}
+            </p>
           )}
         </div>
       )}
@@ -162,6 +164,7 @@ export default function PlanningPage() {
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
               initialView="timeGridWeek"
               locale="fr"
+              firstDay={0}
               headerToolbar={{
                 left: 'prev,next today',
                 center: 'title',

@@ -18,8 +18,15 @@ def list_paiements(
     q = db.query(Paiement).filter(Paiement.centre_id == centre_id)
     if statut:
         q = q.filter(Paiement.statut == statut)
-    if mois:
-        q = q.filter(Paiement.mois.startswith(mois))
+    if mois and mois not in ("all", "0", ""):
+        if "-" in mois:
+            q = q.filter(Paiement.mois == mois)
+        else:
+            try:
+                m_num = int(mois)
+                q = q.filter(Paiement.mois.like(f"%-{m_num:02d}"))
+            except ValueError:
+                q = q.filter(Paiement.mois.startswith(mois))
 
     total = q.count()
     items = q.offset((page - 1) * size).limit(size).all()

@@ -108,7 +108,7 @@ export interface Seance {
   salle: string
   enseignant_id: number
   enseignant_nom?: string
-  jour_semaine: 'lundi' | 'mardi' | 'mercredi' | 'jeudi' | 'vendredi' | 'samedi'
+  jour_semaine: 'dimanche' | 'lundi' | 'mardi' | 'mercredi' | 'jeudi' | 'vendredi' | 'samedi'
   heure_debut: string
   heure_fin: string
 }

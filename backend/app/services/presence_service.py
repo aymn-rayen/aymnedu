@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from datetime import date as date_type
 
-from app.models import Presence, Groupe, Eleve
+from app.models import Presence, Groupe, Eleve, InscriptionGroupe
 from app.schemas.presence import PresenceIn
 
 
@@ -11,13 +11,56 @@ def list_presences(db: Session, centre_id: int, groupe_id: int, date: date_type)
     if not groupe:
         raise HTTPException(status_code=404, detail="Groupe non trouvé")
 
-    rows = db.query(Presence).filter(Presence.groupe_id == groupe_id, Presence.date_seance == date).all()
+    # Récupérer tous les élèves inscrits dans le groupe
+    inscriptions = (
+        db.query(InscriptionGroupe)
+        .join(Eleve, InscriptionGroupe.eleve_id == Eleve.id)
+        .filter(
+            InscriptionGroupe.groupe_id == groupe_id,
+            Eleve.centre_id == centre_id,
+            Eleve.deleted_at == None,
+            Eleve.statut == "actif",
+        )
+        .all()
+    )
+
+    # Présences déjà existantes pour ce créneau
+    existing = {
+        p.eleve_id: p
+        for p in db.query(Presence).filter(
+            Presence.groupe_id == groupe_id,
+            Presence.date_seance == date,
+        ).all()
+    }
+
     result = []
-    for r in rows:
-        result.append({
-            **r.__dict__,
-            "eleve_nom": f"{r.eleve.prenom} {r.eleve.nom}" if r.eleve else None
-        })
+    for insc in inscriptions:
+        eleve = insc.eleve
+        if not eleve:
+            continue
+        p = existing.get(eleve.id)
+        if p:
+            statut_val = p.statut.value if hasattr(p.statut, "value") else str(p.statut)
+            result.append({
+                "id": p.id,
+                "eleve_id": eleve.id,
+                "groupe_id": groupe_id,
+                "date_seance": date,
+                "statut": statut_val,
+                "minutes_retard": p.minutes_retard,
+                "eleve_nom": f"{eleve.prenom} {eleve.nom}",
+            })
+        else:
+            result.append({
+                "id": None,
+                "eleve_id": eleve.id,
+                "groupe_id": groupe_id,
+                "date_seance": date,
+                "statut": "present",
+                "minutes_retard": 0,
+                "eleve_nom": f"{eleve.prenom} {eleve.nom}",
+            })
+
     return result
 
 
