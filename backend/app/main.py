@@ -12,6 +12,7 @@ from app.api.routes import (
     presences_router,
     emplois_router,
     dashboard_router,
+    utilisateurs_router,
 )
 
 # Create tables on startup (use Alembic in production)
@@ -25,9 +26,15 @@ app = FastAPI(
 )
 
 # ── CORS ─────────────────────────────────────────────────────────────────────
+cors_val = settings.CORS_ORIGINS
+if cors_val == "*" or not cors_val:
+    origins = ["*"]
+else:
+    origins = [o.strip() for o in cors_val.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -43,6 +50,7 @@ app.include_router(paiements_router,   prefix=PREFIX)
 app.include_router(presences_router,   prefix=PREFIX)
 app.include_router(emplois_router,     prefix=PREFIX)
 app.include_router(dashboard_router,   prefix=PREFIX)
+app.include_router(utilisateurs_router, prefix=PREFIX)
 
 
 @app.get("/", tags=["health"])

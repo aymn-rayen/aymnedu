@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from fastapi import HTTPException
 from typing import Optional
 from datetime import datetime
@@ -29,7 +29,17 @@ def list_paiements(
                 q = q.filter(Paiement.mois.startswith(mois))
 
     total = q.count()
-    items = q.offset((page - 1) * size).limit(size).all()
+    # Eager-load relations en 1 seule requête SQL (élimination N+1)
+    items = (
+        q.options(
+            joinedload(Paiement.eleve),
+            joinedload(Paiement.groupe),
+        )
+        .order_by(Paiement.id.desc())
+        .offset((page - 1) * size)
+        .limit(size)
+        .all()
+    )
     result = []
     for p in items:
         out = PaiementOut.model_validate(p)

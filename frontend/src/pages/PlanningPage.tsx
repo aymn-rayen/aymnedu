@@ -8,7 +8,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { emploisApi, groupesApi, enseignantsApi } from '@/api'
-import { PlusCircle } from 'lucide-react'
+import { PlusCircle, AlertTriangle, CheckCircle2, X } from 'lucide-react'
 
 const JOURS: Record<string, number> = {
   dimanche: 0, lundi: 1, mardi: 2, mercredi: 3, jeudi: 4, vendredi: 5, samedi: 6,
@@ -27,6 +27,7 @@ type SeanceForm = z.infer<typeof schema>
 export default function PlanningPage() {
   const qc = useQueryClient()
   const [showForm, setShowForm] = useState(false)
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
 
   const { data: seances, isLoading } = useQuery({
     queryKey: ['emplois-du-temps'],
@@ -42,12 +43,31 @@ export default function PlanningPage() {
   const createMutation = useMutation({
     mutationFn: (data: SeanceForm) =>
       emploisApi.create({ ...data, enseignant_id: data.enseignant_id || undefined }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['emplois-du-temps'] }); reset(); setShowForm(false) },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['emplois-du-temps'] })
+      reset()
+      setShowForm(false)
+      setFeedback({ type: 'success', message: 'Séance ajoutée au planning avec succès !' })
+      setTimeout(() => setFeedback(null), 4000)
+    },
+    onError: () => {
+      // Handled in form UI
+    },
   })
 
   const deleteMutation = useMutation({
     mutationFn: emploisApi.delete,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['emplois-du-temps'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['emplois-du-temps'] })
+      setFeedback({ type: 'success', message: 'Séance retirée du planning.' })
+      setTimeout(() => setFeedback(null), 4000)
+    },
+    onError: (err: any) => {
+      setFeedback({
+        type: 'error',
+        message: err?.response?.data?.detail || 'Erreur lors de la suppression de la séance.',
+      })
+    },
   })
 
   // Map seances → FullCalendar events (recurring by day of week)
@@ -75,6 +95,32 @@ export default function PlanningPage() {
         </button>
       </div>
 
+      {/* Feedback Notification Banner */}
+      {feedback && (
+        <div
+          className={`flex items-center justify-between px-4 py-3 rounded-xl border text-sm animate-fadeIn ${
+            feedback.type === 'success'
+              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+              : 'bg-red-500/10 border-red-500/30 text-red-300'
+          }`}
+        >
+          <div className="flex items-center gap-2.5">
+            {feedback.type === 'success' ? (
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+            ) : (
+              <AlertTriangle className="w-5 h-5 text-red-400 shrink-0" />
+            )}
+            <span className="font-medium">{feedback.message}</span>
+          </div>
+          <button
+            onClick={() => setFeedback(null)}
+            className="text-slate-400 hover:text-white p-1 rounded-lg transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       {/* Create Form */}
       {showForm && (
         <div className="card border-primary-500/20 animate-fadeIn">
@@ -84,6 +130,24 @@ export default function PlanningPage() {
               ⚠️ Vous devez d'abord créer des groupes dans la page "Groupes" avant d'ajouter des séances.
             </div>
           )}
+
+          {/* Conflict 409 or Generic Error Banner */}
+          {createMutation.isError && (
+            <div className="mb-5 flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm animate-fadeIn">
+              <AlertTriangle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <strong className="block font-semibold text-red-200">
+                  {(createMutation.error as any)?.response?.status === 409
+                    ? "Conflit d'horaire détecté !"
+                    : "Impossible d'ajouter la séance"}
+                </strong>
+                <p className="mt-0.5 text-xs text-red-300/90 leading-relaxed">
+                  {(createMutation.error as any)?.response?.data?.detail || "Une erreur est survenue lors de la planification."}
+                </p>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit(d => createMutation.mutate(d))} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label className="label">Groupe *</label>
@@ -131,17 +195,18 @@ export default function PlanningPage() {
             </div>
 
             <div className="sm:col-span-2 lg:col-span-3 flex gap-3 justify-end">
-              <button type="button" onClick={() => setShowForm(false)} className="btn-secondary">Annuler</button>
+              <button
+                type="button"
+                onClick={() => { setShowForm(false); createMutation.reset() }}
+                className="btn-secondary"
+              >
+                Annuler
+              </button>
               <button type="submit" disabled={createMutation.isPending} className="btn-primary">
                 {createMutation.isPending ? 'Ajout...' : 'Ajouter au planning'}
               </button>
             </div>
           </form>
-          {createMutation.isError && (
-            <p className="text-xs text-red-400 mt-2 font-medium">
-              {(createMutation.error as any)?.response?.data?.detail || "Erreur lors de la création de la séance."}
-            </p>
-          )}
         </div>
       )}
 

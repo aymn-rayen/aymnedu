@@ -19,6 +19,40 @@ export interface LoginRequest {
   password: string
 }
 
+// Role-based login
+export interface LoginRoleRequest {
+  centre_id: number
+  role: string
+  password: string
+}
+
+export interface CentreSearchResult {
+  id: number
+  nom: string
+  wilaya?: string
+}
+
+export interface CentreRoleUser {
+  id: number
+  full_name: string
+  role: string
+}
+
+export interface Utilisateur {
+  id: number
+  email: string
+  full_name: string
+  role: string
+  is_active: boolean
+}
+
+export interface CreateUtilisateurRequest {
+  full_name: string
+  email: string
+  password: string
+  role: string
+}
+
 export interface RegisterRequest {
   nom_centre: string
   wilaya?: string

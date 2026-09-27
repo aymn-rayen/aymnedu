@@ -1,7 +1,6 @@
 import sys
 import os
-import sqlite3
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 # Add current path to sys.path
@@ -10,53 +9,19 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from app.core.config import settings
 from app.core.database import Base
 from app.core.security import hash_password
-from app.models import Base, Centre, Utilisateur, RoleEnum, Eleve, Groupe, InscriptionGroupe, Paiement
+from app.models import Centre, Utilisateur, RoleEnum, Eleve, Groupe, InscriptionGroupe, Paiement
 
 def main():
     print("Initializing Database...")
     db_url = settings.DATABASE_URL
-    print(f"Connecting to database at {db_url}")
+    print(f"Connecting to PostgreSQL at {db_url}")
 
-    # Test connection, fallback to sqlite if postgres fails
-    fallback_to_sqlite = False
-    if "postgresql" in db_url:
-        try:
-            # We try to create engine and connect
-            engine = create_engine(db_url, connect_args={"connect_timeout": 3})
-            with engine.connect() as conn:
-                print("Successfully connected to PostgreSQL database!")
-        except Exception as e:
-            print(f"PostgreSQL connection failed: {e}")
-            print("Falling back to local SQLite database...")
-            fallback_to_sqlite = True
-    else:
-        fallback_to_sqlite = "sqlite" in db_url
-
-    if fallback_to_sqlite:
-        db_url = "sqlite:///aymnedu.db"
-        print(f"Using SQLite database: {db_url}")
-        # Build SQLite engine
-        engine = create_engine(db_url, connect_args={"check_same_thread": False})
-        
-        # Override the .env file to use sqlite for subsequent runs
-        env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
-        with open(env_path, "w", encoding="utf-8") as f:
-            f.write(f"DATABASE_URL={db_url}\n")
-            f.write("SECRET_KEY=aymnedu_secret_key_1234_local\n")
-            f.write("ALGORITHM=HS256\n")
-            f.write("CORS_ORIGINS=[\"http://localhost:5173\"]\n")
-    else:
-        engine = create_engine(db_url)
-
-    # Re-apply SQLite settings to database engine if needed
-    if "sqlite" in db_url:
-        # Patch database.py settings class to use check_same_thread: False when connecting
-        import app.core.database
-        app.core.database.engine = engine
-        app.core.database.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    engine = create_engine(db_url, pool_pre_ping=True)
+    with engine.connect() as conn:
+        print("Successfully connected to PostgreSQL database!")
 
     # Create tables
-    print("Creating tables...")
+    print("Ensuring tables are created in PostgreSQL...")
     Base.metadata.create_all(bind=engine)
     print("Tables created successfully.")
 

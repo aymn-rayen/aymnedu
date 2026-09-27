@@ -1,17 +1,35 @@
 import apiClient from './client'
-import type { AuthTokens, LoginRequest, RegisterRequest, User, DashboardStats } from '@/types'
+import type { AuthTokens, LoginRequest, LoginRoleRequest, RegisterRequest, User, DashboardStats, CentreSearchResult, CentreRoleUser, Utilisateur, CreateUtilisateurRequest } from '@/types'
 import type { PaginatedResponse, Eleve, CreateEleveRequest, Groupe, Paiement, Presence, Seance } from '@/types'
 
 // ── Auth ───────────────────────────────────────────────────────────────────
 export const authApi = {
   login: (data: LoginRequest) =>
     apiClient.post<AuthTokens>('/auth/login', data).then(r => r.data),
+  loginByRole: (data: LoginRoleRequest) =>
+    apiClient.post<AuthTokens>('/auth/login-role', data).then(r => r.data),
+  searchCentres: (q: string) =>
+    apiClient.get<CentreSearchResult[]>('/auth/centres/search', { params: { q } }).then(r => r.data),
+  getCentreRoles: (centreId: number) =>
+    apiClient.get<CentreRoleUser[]>(`/auth/centres/${centreId}/roles`).then(r => r.data),
   register: (data: RegisterRequest) =>
     apiClient.post<AuthTokens>('/auth/register', data).then(r => r.data),
   me: () =>
     apiClient.get<User>('/auth/me').then(r => r.data),
   refresh: (refresh_token: string) =>
     apiClient.post<AuthTokens>('/auth/refresh', { refresh_token }).then(r => r.data),
+}
+
+// ── Utilisateurs (gestion des rôles par l'admin) ─────────────────────────
+export const utilisateursApi = {
+  list: () =>
+    apiClient.get<Utilisateur[]>('/utilisateurs').then(r => r.data),
+  create: (data: CreateUtilisateurRequest) =>
+    apiClient.post<Utilisateur>('/utilisateurs', data).then(r => r.data),
+  resetPassword: (id: number, password: string) =>
+    apiClient.patch<Utilisateur>(`/utilisateurs/${id}/password`, { password }).then(r => r.data),
+  delete: (id: number) =>
+    apiClient.delete(`/utilisateurs/${id}`),
 }
 
 // ── Dashboard ──────────────────────────────────────────────────────────────
@@ -32,6 +50,8 @@ export const elevesApi = {
     apiClient.put<Eleve>(`/eleves/${id}`, data).then(r => r.data),
   delete: (id: number) =>
     apiClient.delete(`/eleves/${id}`),
+  search: (q: string) =>
+    apiClient.get<Eleve[]>('/eleves/search', { params: { q } }).then(r => r.data),
 }
 
 // ── Groupes ────────────────────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 from fastapi import HTTPException
 
@@ -8,7 +8,7 @@ from app.schemas.eleve import EleveOut
 
 
 def _build_groupe_out(db: Session, g: Groupe) -> GroupeOut:
-    """Helper interne pour construire GroupeOut avec les champs calculés."""
+    """Helper interne pour construire GroupeOut pour un groupe unitaire."""
     count = db.query(InscriptionGroupe).filter(InscriptionGroupe.groupe_id == g.id).count()
     out = GroupeOut.model_validate(g)
     out.nombre_eleves = count
@@ -17,17 +17,43 @@ def _build_groupe_out(db: Session, g: Groupe) -> GroupeOut:
 
 
 def list_groupes(db: Session, centre_id: int) -> list[GroupeOut]:
-    # Filtre les groupes non supprimés (deleted_at IS NULL)
-    groupes = db.query(Groupe).filter(
-        Groupe.centre_id == centre_id,
-        Groupe.deleted_at == None  # noqa: E711
-    ).all()
-    return [_build_groupe_out(db, g) for g in groupes]
+    """
+    Récupère tous les groupes actifs du centre avec leur nombre d'élèves
+    et le nom de l'enseignant en une SEULE requête SQL optimisée (élimination N+1).
+    """
+    counts_sub = (
+        db.query(
+            InscriptionGroupe.groupe_id,
+            func.count(InscriptionGroupe.eleve_id).label("nb_eleves"),
+        )
+        .group_by(InscriptionGroupe.groupe_id)
+        .subquery()
+    )
+
+    rows = (
+        db.query(Groupe, func.coalesce(counts_sub.c.nb_eleves, 0))
+        .outerjoin(counts_sub, Groupe.id == counts_sub.c.groupe_id)
+        .options(joinedload(Groupe.enseignant))
+        .filter(
+            Groupe.centre_id == centre_id,
+            Groupe.deleted_at == None,  # noqa: E711
+        )
+        .order_by(Groupe.nom.asc())
+        .all()
+    )
+
+    result = []
+    for g, cnt in rows:
+        out = GroupeOut.model_validate(g)
+        out.nombre_eleves = int(cnt)
+        out.enseignant_nom = g.enseignant.full_name if g.enseignant else None
+        result.append(out)
+    return result
 
 
 def get_groupe(db: Session, centre_id: int, groupe_id: int) -> GroupeOut:
-    """Récupère un groupe actif (non supprimé). Lève 404 si soft-deleted."""
-    g = db.query(Groupe).filter(
+    """Récupère un groupe actif (non supprimé) avec son enseignant chargé en 1 requête."""
+    g = db.query(Groupe).options(joinedload(Groupe.enseignant)).filter(
         Groupe.id == groupe_id,
         Groupe.centre_id == centre_id,
         Groupe.deleted_at == None  # noqa: E711

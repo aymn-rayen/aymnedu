@@ -11,7 +11,9 @@ import PaiementsPage from '@/pages/PaiementsPage'
 import PresencesPage from '@/pages/PresencesPage'
 import PlanningPage from '@/pages/PlanningPage'
 import EnseignantsPage from '@/pages/EnseignantsPage'
+import RolesPage from '@/pages/RolesPage'
 
+// ── Protected Route ──────────────────────────────────────────────────────────
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth()
 
@@ -23,6 +25,13 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     )
   }
   if (!user) return <Navigate to="/app/login" replace />
+  return <>{children}</>
+}
+
+// ── Role Guard: only directeur can access this route ─────────────────────────
+function DirecteurOnly({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth()
+  if (user?.role !== 'directeur') return <Navigate to="/app/presences" replace />
   return <>{children}</>
 }
 
@@ -52,6 +61,15 @@ export default function App() {
           <Route path="paiements" element={<PaiementsPage />} />
           <Route path="presences" element={<PresencesPage />} />
           <Route path="planning" element={<PlanningPage />} />
+          {/* Admin-only: gestion des accès & rôles */}
+          <Route
+            path="roles"
+            element={
+              <DirecteurOnly>
+                <RolesPage />
+              </DirecteurOnly>
+            }
+          />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
@@ -59,4 +77,3 @@ export default function App() {
     </AuthProvider>
   )
 }
-

@@ -10,19 +10,19 @@ class Settings(BaseSettings):
     DEBUG: bool = False
 
     # Database
-    DATABASE_URL: str = "postgresql://aymnedu:aymnedu@localhost:5432/aymnedu"
+    DATABASE_URL: str = "postgresql://aymnedu:changeme@localhost:5432/aymnedu"
 
     # JWT
-    SECRET_KEY: str = "change-me-in-production-please"
+    SECRET_KEY: str = "change-me-in-production-please-secret-key-32chars"
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
 
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
 
     # CORS
-    CORS_ORIGINS: list[str] = ["http://localhost:5173", "http://localhost:3000"]
+    CORS_ORIGINS: str = "*"
 
 
 settings = Settings()

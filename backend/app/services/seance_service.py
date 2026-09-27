@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_, or_
 from fastapi import HTTPException
 from datetime import time as time_type
@@ -86,7 +86,16 @@ def _build_seance_out(s: Seance) -> SeanceOut:
 
 
 def list_seances(db: Session, centre_id: int) -> list[SeanceOut]:
-    seances = db.query(Seance).filter(Seance.centre_id == centre_id).all()
+    """Récupère toutes les séances avec relations eager-loadées (élimination N+1)."""
+    seances = (
+        db.query(Seance)
+        .options(
+            joinedload(Seance.groupe),
+            joinedload(Seance.enseignant),
+        )
+        .filter(Seance.centre_id == centre_id)
+        .all()
+    )
     return [_build_seance_out(s) for s in seances]
 
 

@@ -1,18 +1,41 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import {
-  LayoutDashboard, Users, BookOpen, CreditCard, ClipboardCheck, Calendar, LogOut, GraduationCap, School,
+  LayoutDashboard, Users, BookOpen, CreditCard, ClipboardCheck,
+  Calendar, LogOut, GraduationCap, School, Users2
 } from 'lucide-react'
 
-const NAV_ITEMS = [
-  { to: '/app/dashboard',    label: 'Tableau de bord', icon: LayoutDashboard },
-  { to: '/app/eleves',       label: 'Élèves',           icon: Users },
-  { to: '/app/groupes',      label: 'Groupes',           icon: BookOpen },
-  { to: '/app/enseignants',  label: 'Enseignants',       icon: School },
-  { to: '/app/paiements',    label: 'Paiements',         icon: CreditCard },
-  { to: '/app/presences',    label: 'Présences',         icon: ClipboardCheck },
-  { to: '/app/planning',     label: 'Planning',          icon: Calendar },
-]
+// ── Navigation items per role ──────────────────────────────────────────────
+const NAV_BY_ROLE: Record<string, { to: string; label: string; icon: React.ElementType }[]> = {
+  directeur: [
+    { to: '/app/dashboard',    label: 'Tableau de bord', icon: LayoutDashboard },
+    { to: '/app/eleves',       label: 'Élèves',           icon: Users },
+    { to: '/app/groupes',      label: 'Groupes',          icon: BookOpen },
+    { to: '/app/enseignants',  label: 'Enseignants',      icon: School },
+    { to: '/app/paiements',    label: 'Paiements',        icon: CreditCard },
+    { to: '/app/presences',    label: 'Présences',        icon: ClipboardCheck },
+    { to: '/app/planning',     label: 'Planning',         icon: Calendar },
+    { to: '/app/roles',        label: 'Gestion des accès', icon: Users2 },
+  ],
+  secretaire: [
+    { to: '/app/eleves',       label: 'Élèves',           icon: Users },
+    { to: '/app/groupes',      label: 'Groupes',          icon: BookOpen },
+    { to: '/app/paiements',    label: 'Paiements',        icon: CreditCard },
+    { to: '/app/presences',    label: 'Présences',        icon: ClipboardCheck },
+    { to: '/app/planning',     label: 'Planning',         icon: Calendar },
+  ],
+  enseignant: [
+    { to: '/app/presences',    label: 'Présences',        icon: ClipboardCheck },
+    { to: '/app/planning',     label: 'Planning',         icon: Calendar },
+    { to: '/app/groupes',      label: 'Mes Groupes',      icon: BookOpen },
+  ],
+}
+
+const ROLE_BADGES: Record<string, { label: string; color: string }> = {
+  directeur:  { label: 'Directeur',  color: 'text-violet-400 bg-violet-500/15' },
+  secretaire: { label: 'Secrétaire', color: 'text-sky-400 bg-sky-500/15' },
+  enseignant: { label: 'Enseignant', color: 'text-emerald-400 bg-emerald-500/15' },
+}
 
 export function DashboardLayout() {
   const { user, logout } = useAuth()
@@ -22,6 +45,9 @@ export function DashboardLayout() {
     logout()
     navigate('/app/login')
   }
+
+  const navItems = NAV_BY_ROLE[user?.role ?? 'directeur'] ?? NAV_BY_ROLE.directeur
+  const roleBadge = ROLE_BADGES[user?.role ?? 'directeur']
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#0b0f19]">
@@ -41,7 +67,7 @@ export function DashboardLayout() {
 
         {/* Navigation */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
+          {navItems.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}
@@ -63,7 +89,9 @@ export function DashboardLayout() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-white truncate">{user?.full_name}</p>
-              <p className="text-xs text-slate-500 capitalize">{user?.role}</p>
+              <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${roleBadge.color}`}>
+                {roleBadge.label}
+              </span>
             </div>
             <button
               onClick={handleLogout}

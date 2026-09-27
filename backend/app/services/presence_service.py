@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from fastapi import HTTPException
 from datetime import date as date_type
 
@@ -11,9 +11,10 @@ def list_presences(db: Session, centre_id: int, groupe_id: int, date: date_type)
     if not groupe:
         raise HTTPException(status_code=404, detail="Groupe non trouvé")
 
-    # Récupérer tous les élèves inscrits dans le groupe
+    # Récupérer tous les élèves inscrits dans le groupe avec eleve eager-loaded (pas de N+1)
     inscriptions = (
         db.query(InscriptionGroupe)
+        .options(joinedload(InscriptionGroupe.eleve))
         .join(Eleve, InscriptionGroupe.eleve_id == Eleve.id)
         .filter(
             InscriptionGroupe.groupe_id == groupe_id,
@@ -21,6 +22,7 @@ def list_presences(db: Session, centre_id: int, groupe_id: int, date: date_type)
             Eleve.deleted_at == None,
             Eleve.statut == "actif",
         )
+        .order_by(Eleve.nom.asc(), Eleve.prenom.asc())
         .all()
     )
 
@@ -65,18 +67,36 @@ def list_presences(db: Session, centre_id: int, groupe_id: int, date: date_type)
 
 
 def save_presences_batch(db: Session, centre_id: int, items: list[PresenceIn]) -> None:
+    """Enregistre en batch les présences en 2 requêtes au lieu de 2*N requêtes."""
+    if not items:
+        return
+
+    eleve_ids = list({item.eleve_id for item in items})
+    valid_eleve_rows = db.query(Eleve.id).filter(
+        Eleve.id.in_(eleve_ids),
+        Eleve.centre_id == centre_id,
+    ).all()
+    valid_eleves = {row[0] for row in valid_eleve_rows}
+
+    # Charger toutes les présences existantes en 1 seule requête
+    groupe_ids = list({item.groupe_id for item in items})
+    dates = list({item.date_seance for item in items})
+
+    existing_presences = db.query(Presence).filter(
+        Presence.groupe_id.in_(groupe_ids),
+        Presence.date_seance.in_(dates),
+        Presence.eleve_id.in_(list(valid_eleves)),
+    ).all()
+
+    existing_map = {(p.groupe_id, p.date_seance, p.eleve_id): p for p in existing_presences}
+
     for item in items:
-        eleve = db.query(Eleve).filter(Eleve.id == item.eleve_id, Eleve.centre_id == centre_id).first()
-        if not eleve:
+        if item.eleve_id not in valid_eleves:
             continue
 
-        existing = db.query(Presence).filter(
-            Presence.eleve_id == item.eleve_id,
-            Presence.groupe_id == item.groupe_id,
-            Presence.date_seance == item.date_seance,
-        ).first()
-
-        if existing:
+        key = (item.groupe_id, item.date_seance, item.eleve_id)
+        if key in existing_map:
+            existing = existing_map[key]
             existing.statut = item.statut  # type: ignore
             existing.minutes_retard = item.minutes_retard
         else:

@@ -26,6 +26,20 @@ def list_eleves(
     return eleve_service.list_eleves(db, user.centre_id, q=q, page=page, size=size)
 
 
+@router.get("/search", response_model=list[EleveOut])
+def search_eleves(
+    q: str,
+    db: Session = Depends(get_db),
+    user: Utilisateur = Depends(require_role(ROLE_DIR, ROLE_SEC, ROLE_ENS))
+):
+    """
+    Lightweight search endpoint for the groupe-management modal.
+    Returns up to 50 matching active eleves for the current centre.
+    Requires at least 2 characters to avoid returning the entire database.
+    """
+    return eleve_service.search_eleves(db, user.centre_id, q=q)
+
+
 @router.post("", response_model=EleveOut, status_code=201)
 def create_eleve(
     body: EleveCreate,

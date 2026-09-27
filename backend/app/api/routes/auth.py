@@ -52,7 +52,15 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     payload = decode_token(token)
     if not payload or payload.get("type") != "access":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalide ou expiré")
-    user = db.query(Utilisateur).filter(Utilisateur.id == payload.get("sub")).first()
+    sub = payload.get("sub")
+    if not sub:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalide ou expiré")
+    try:
+        user_id = int(sub)
+    except (ValueError, TypeError):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalide")
+
+    user = db.query(Utilisateur).filter(Utilisateur.id == user_id).first()
     if not user or not user.is_active:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Utilisateur non trouvé")
     return user
@@ -145,3 +153,107 @@ def refresh(body: RefreshRequest, db: Session = Depends(get_db)):
 @router.get("/me", response_model=UserOut)
 def me(current_user: Utilisateur = Depends(get_current_user)):
     return current_user
+
+
+# ── Role-based login (used by the new login page) ──────────────────────────
+
+class LoginRoleRequest(BaseModel):
+    """
+    Connexion par rôle.
+    L'utilisateur sélectionne son école (centre_id), son rôle et entre son mot de passe.
+    """
+    centre_id: int
+    role: str       # "directeur" | "secretaire" | "enseignant"
+    password: str
+
+
+class CentreSearchResult(BaseModel):
+    id: int
+    nom: str
+    wilaya: str | None = None
+
+    class Config:
+        from_attributes = True
+
+
+class RoleUserInfo(BaseModel):
+    id: int
+    full_name: str
+    role: str
+
+    class Config:
+        from_attributes = True
+
+
+@router.get("/centres/search", response_model=list[CentreSearchResult])
+def search_centres(q: str = "", db: Session = Depends(get_db)):
+    """
+    Cherche des centres (écoles) par nom — utilisé dans la page de login
+    pour que l'utilisateur trouve son école rapidement.
+    """
+    from app.models import Centre
+    query = db.query(Centre).filter(Centre.is_active == True)  # noqa: E712
+    if q.strip():
+        query = query.filter(Centre.nom.ilike(f"%{q}%"))
+    return query.order_by(Centre.nom).limit(20).all()
+
+
+@router.get("/centres/{centre_id}/roles", response_model=list[RoleUserInfo])
+def list_roles_for_centre(centre_id: int, db: Session = Depends(get_db)):
+    """
+    Retourne la liste des utilisateurs actifs d'un centre, groupés par rôle.
+    Utilisé dans la page de login pour afficher le dropdown des profils disponibles.
+    """
+    users = db.query(Utilisateur).filter(
+        Utilisateur.centre_id == centre_id,
+        Utilisateur.is_active == True,  # noqa: E712
+    ).order_by(Utilisateur.role, Utilisateur.full_name).all()
+    return users
+
+
+@router.post("/login-role", response_model=TokenResponse)
+def login_by_role(body: LoginRoleRequest, db: Session = Depends(get_db)):
+    """
+    Connexion par sélection de rôle :
+    1. L'utilisateur choisit son école (centre_id)
+    2. Sélectionne son rôle/profil
+    3. Saisit son mot de passe
+    """
+    # Trouver tous les utilisateurs du centre avec ce rôle
+    valid_roles = {r.value for r in RoleEnum}
+    if body.role not in valid_roles:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Rôle invalide : {body.role}"
+        )
+
+    users = db.query(Utilisateur).filter(
+        Utilisateur.centre_id == body.centre_id,
+        Utilisateur.role == RoleEnum(body.role),
+        Utilisateur.is_active == True,  # noqa: E712
+    ).all()
+
+    if not users:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Aucun compte actif avec ce rôle dans cette école"
+        )
+
+    # Vérifier le mot de passe parmi les utilisateurs du rôle
+    authenticated_user = None
+    for user in users:
+        if verify_password(body.password, user.hashed_password):
+            authenticated_user = user
+            break
+
+    if not authenticated_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Mot de passe incorrect"
+        )
+
+    data = {"sub": str(authenticated_user.id), "centre_id": authenticated_user.centre_id}
+    return TokenResponse(
+        access_token=create_access_token(data),
+        refresh_token=create_refresh_token(data),
+    )

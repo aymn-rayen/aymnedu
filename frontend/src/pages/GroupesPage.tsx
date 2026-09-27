@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { groupesApi, enseignantsApi, elevesApi } from '@/api'
 import type { Groupe } from '@/types'
-import { BookOpen, Users, PlusCircle, Pencil, UserPlus, X, Trash2, Search } from 'lucide-react'
+import { BookOpen, Users, PlusCircle, Pencil, UserPlus, X, Trash2, Search, Loader2 } from 'lucide-react'
 
 const NIVEAUX = ['1AP','2AP','3AP','4AP','5AP','1AM','2AM','3AM','4AM','1AS','2AS','3AS','Langues']
 const MATIERES = ['Mathématiques','Physique','Arabe','Français','Anglais','Science','Histoire/Géo','Informatique','Autre']
@@ -25,6 +25,13 @@ export default function GroupesPage() {
   const [editingGroupe, setEditingGroupe] = useState<Groupe | null>(null)
   const [managingElevesGroupe, setManagingElevesGroupe] = useState<Groupe | null>(null)
   const [eleveSearch, setEleveSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+
+  // Debounce: wait 350ms after the user stops typing before querying the API
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(eleveSearch.trim()), 350)
+    return () => clearTimeout(timer)
+  }, [eleveSearch])
 
   const { data: groupes, isLoading } = useQuery({
     queryKey: ['groupes'],
@@ -36,10 +43,12 @@ export default function GroupesPage() {
     queryFn: enseignantsApi.list,
   })
 
-  const { data: allElevesData } = useQuery({
-    queryKey: ['eleves', 'all'],
-    queryFn: () => elevesApi.list({ page: 1 }),
-    enabled: !!managingElevesGroupe,
+  // Server-side search: only fires when the modal is open and ≥2 chars are typed
+  const { data: searchResults, isFetching: isSearching } = useQuery({
+    queryKey: ['eleves-search', debouncedSearch, managingElevesGroupe?.id],
+    queryFn: () => elevesApi.search(debouncedSearch),
+    enabled: !!managingElevesGroupe && debouncedSearch.length >= 2,
+    staleTime: 10_000,
   })
 
   const { data: groupeEleves, isLoading: isLoadingGroupeEleves } = useQuery({
@@ -118,13 +127,9 @@ export default function GroupesPage() {
     }
   }
 
-  // Filter available students to add to group
+  // Filter server search results to exclude already-enrolled students
   const enrolledIds = new Set(groupeEleves?.map(e => e.id) ?? [])
-  const availableEleves = allElevesData?.items?.filter(e =>
-    !enrolledIds.has(e.id) &&
-    (`${e.prenom} ${e.nom}`.toLowerCase().includes(eleveSearch.toLowerCase()) ||
-     e.niveau.toLowerCase().includes(eleveSearch.toLowerCase()))
-  ) ?? []
+  const availableEleves = (searchResults ?? []).filter(e => !enrolledIds.has(e.id))
 
   return (
     <div className="space-y-6">
@@ -314,7 +319,7 @@ export default function GroupesPage() {
                 </p>
               </div>
               <button
-                onClick={() => setManagingElevesGroupe(null)}
+                onClick={() => { setManagingElevesGroupe(null); setEleveSearch(''); setDebouncedSearch('') }}
                 className="text-slate-400 hover:text-white p-1 rounded-lg transition-colors"
               >
                 <X className="w-6 h-6" />
@@ -361,14 +366,22 @@ export default function GroupesPage() {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
                   <input
                     className="input pl-10 text-xs py-2"
-                    placeholder="Rechercher un élève du centre par nom ou niveau..."
+                    placeholder="Taper au moins 2 lettres du nom ou prénom..."
                     value={eleveSearch}
-                    onChange={e => setEleveSearch(e.target.value)}
+                    onChange={e => { setEleveSearch(e.target.value) }}
+                    autoComplete="off"
                   />
+                  {isSearching && (
+                    <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 animate-spin" />
+                  )}
                 </div>
 
-                {availableEleves.length === 0 ? (
-                  <p className="text-xs text-slate-500 italic">Aucun nouvel élève disponible à ajouter.</p>
+                {debouncedSearch.length < 2 ? (
+                  <p className="text-xs text-slate-500 italic">✏️ Tapez au moins 2 caractères pour rechercher un élève dans le centre.</p>
+                ) : isSearching ? (
+                  <p className="text-xs text-slate-500">Recherche en cours...</p>
+                ) : availableEleves.length === 0 ? (
+                  <p className="text-xs text-slate-500 italic">Aucun élève trouvé pour «&nbsp;{debouncedSearch}&nbsp;» (ou tous sont déjà inscrits).</p>
                 ) : (
                   <div className="max-h-48 overflow-y-auto space-y-1 pr-1">
                     {availableEleves.map(e => (
@@ -377,9 +390,9 @@ export default function GroupesPage() {
                         <button
                           onClick={() => addEleveMutation.mutate({ groupeId: managingElevesGroupe.id, eleveId: e.id })}
                           disabled={addEleveMutation.isPending || (groupeEleves?.length ?? 0) >= managingElevesGroupe.capacite_max}
-                          className="btn-primary py-1 px-3 text-xs"
+                          className="btn-primary py-1 px-3 text-xs disabled:opacity-50"
                         >
-                          + Ajouter
+                          {addEleveMutation.isPending ? '...' : '+ Ajouter'}
                         </button>
                       </div>
                     ))}
@@ -391,7 +404,7 @@ export default function GroupesPage() {
             {/* Modal Footer */}
             <div className="p-4 border-t border-white/10 flex justify-end bg-white/2">
               <button
-                onClick={() => setManagingElevesGroupe(null)}
+                onClick={() => { setManagingElevesGroupe(null); setEleveSearch(''); setDebouncedSearch('') }}
                 className="btn-secondary text-xs px-5"
               >
                 Fermer

@@ -33,6 +33,27 @@ def list_eleves(
     }
 
 
+
+def search_eleves(db: Session, centre_id: int, q: str) -> list[Eleve]:
+    """
+    Lightweight full-text search for the groupe-management modal.
+    Returns up to 50 active eleves matching q (prenom or nom).
+    """
+    like = f"%{q}%"
+    return (
+        db.query(Eleve)
+        .filter(
+            Eleve.centre_id == centre_id,
+            Eleve.deleted_at == None,  # noqa: E711
+            Eleve.statut == "actif",
+            (Eleve.prenom.ilike(like)) | (Eleve.nom.ilike(like))
+        )
+        .order_by(Eleve.nom, Eleve.prenom)
+        .limit(50)
+        .all()
+    )
+
+
 def get_eleve(db: Session, centre_id: int, eleve_id: int) -> Eleve:
     """Récupère un élève actif (non supprimé). Lève 404 si soft-deleted."""
     eleve = db.query(Eleve).filter(
