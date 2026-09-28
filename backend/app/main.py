@@ -15,8 +15,12 @@ from app.api.routes import (
     utilisateurs_router,
 )
 
-# Create tables on startup (use Alembic in production)
-Base.metadata.create_all(bind=engine)
+# Create tables on startup safely
+try:
+    Base.metadata.create_all(bind=engine)
+    print("✓ PostgreSQL tables checked/created successfully.")
+except Exception as exc:
+    print(f"⚠ Database startup warning (tables could not be created automatically): {exc}")
 
 app = FastAPI(
     title=settings.APP_NAME,
