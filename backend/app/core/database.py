@@ -6,7 +6,9 @@ import re
 
 db_url = settings.DATABASE_URL.strip() if settings.DATABASE_URL else ""
 if db_url.startswith("postgres://"):
-    db_url = db_url.replace("postgres://", "postgresql://", 1)
+    db_url = db_url.replace("postgres://", "postgresql+psycopg2://", 1)
+elif db_url.startswith("postgresql://") and not db_url.startswith("postgresql+"):
+    db_url = db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
 
 # Remove channel_binding parameter if present (can cause issues with psycopg2 on some Linux environments)
 if "channel_binding=" in db_url:
