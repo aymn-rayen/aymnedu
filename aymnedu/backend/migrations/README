@@ -1,1 +1,31 @@
-Generic single-database configuration.
+AymnEDU — Alembic Migration Guide
+===================================
+
+## Fresh install (new PostgreSQL database)
+
+```bash
+cd backend
+# Activate your virtual environment first
+alembic upgrade head
+```
+
+This will run ALL migrations in order:
+  1. 0001_initial_schema  → creates all tables + enums
+  2. 03dd511366e5         → idempotent: adds soft-delete columns / unique constraints
+                            if not already present
+
+## Migration chain
+
+  (base) → 0001_initial_schema → 03dd511366e5 (head)
+
+## Add a new migration
+
+```bash
+alembic revision --autogenerate -m "describe_your_change"
+```
+
+## Rollback one step
+
+```bash
+alembic downgrade -1
+```
