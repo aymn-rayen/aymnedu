@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AymnEDU | Logiciel de gestion pour centres de soutien scolaire en Algérie</title>
+  <meta name="description" content="Gérez vos élèves, paiements et emplois du temps depuis une seule plateforme. Conçu spécialement pour les centres de soutien scolaire en Algérie (BEM, BAC, Primaire, Langues).">
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Floating Toast Notification -->
+  <div id="toast" class="toast-notice">
+    <div class="check-circle">✓</div>
+    <div class="toast-content">
+      <strong id="toast-title">Succès !</strong>
+      <p id="toast-desc">Votre demande a été envoyée.</p>
+    </div>
+  </div>
+
+  <!-- Header / Glass Navbar -->
+  <header id="main-header">
+    <div class="container navbar-container">
+      <a href="#" class="logo">
+        <span>Aymn</span>EDU <div class="logo-dot"></div>
+      </a>
+      
+      <nav id="main-nav">
+        <ul>
+          <li class="active"><a href="#accueil">Accueil</a></li>
+          <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+          <li><a href="#calculateur">Tarifs</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+      
+      <div class="nav-actions">
+        <a href="#contact" class="btn btn-secondary btn-sm">Essayer gratuitement (14 jours)</a>
+        <a href="#contact" class="btn btn-primary btn-sm">Demander une démo</a>
+      </div>
+
+      <button class="mobile-toggle" id="menu-toggle" aria-label="Ouvrir le menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="accueil" class="hero">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <span class="badge">SaaS 100% Algérien</span>
+        <h1>Gérez vos élèves, paiements et emplois du temps depuis une seule plateforme.</h1>
+        <p>AymnEDU est le logiciel de gestion conçu spécialement pour les centres de soutien scolaire en Algérie. Automatisez votre administration, gagnez du temps et concentrez-vous sur vos élèves.</p>
+        
+        <div class="hero-ctas">
+          <a href="#contact" class="btn btn-primary">Essayer gratuitement pendant 14 jours</a>
+          <a href="#contact" class="btn btn-secondary">Demander une Démo</a>
+        </div>
+        
+        <div class="hero-stats">
+          <div class="hero-stat-item">
+            <h4>BEM / BAC / Langues</h4>
+            <p>Tous niveaux scolaires</p>
+          </div>
+          <div class="hero-stat-item">
+            <h4>Zéro Papier</h4>
+            <p>100% Digitalisé</p>
+          </div>
+          <div class="hero-stat-item">
+            <h4>Zéro Conflit</h4>
+            <p>Partage de plannings intelligent</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="hero-visual">
+        <div class="dashboard-mock">
+          <div class="mock-header">
+            <div class="mock-dots">
+              <span class="mock-dot red"></span>
+              <span class="mock-dot yellow"></span>
+              <span class="mock-dot green"></span>
+            </div>
+            <div class="mock-title">AymnEDU - Tableau de bord</div>
+          </div>
+          <div class="mock-stats-grid">
+            <div class="mock-stat-card">
+              <div class="label">Élèves Inscrits</div>
+              <div class="value green-text">324</div>
+            </div>
+            <div class="mock-stat-card">
+              <div class="label">Paiements Reçus</div>
+              <div class="value">94%</div>
+            </div>
+          </div>
+          <div class="mock-chart">
+            <div class="mock-chart-header">
+              <span>Fréquentation des Groupes (Hebdo)</span>
+              <span class="green-text">+12% ce mois</span>
+            </div>
+            <div class="mock-bars">
+              <div class="mock-bar" style="height: 35%;"></div>
+              <div class="mock-bar" style="height: 52%;"></div>
+              <div class="mock-bar" style="height: 40%;"></div>
+              <div class="mock-bar" style="height: 78%;"></div>
+              <div class="mock-bar accent-bar" style="height: 95%;"></div>
+              <div class="mock-bar" style="height: 60%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Difference Comparison Section -->
+  <section class="section-padding" style="background-color: #0d1323;">
+    <div class="container">
+      <div class="text-center" style="max-width: 700px; margin: 0 auto 60px;">
+        <span class="badge" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.2); color: var(--secondary);">Avant / Après AymnEDU</span>
+        <h2>Pourquoi moderniser votre centre de soutien scolaire ?</h2>
+        <p style="color: var(--text-secondary); margin-top: 15px;">Fini les feuilles Excel perdues et les retards de paiements. Prenez le contrôle de votre établissement.</p>
+      </div>
+
+      <div class="compare-container">
+        <!-- Before -->
+        <div class="compare-card before">
+          <h3 class="compare-title before-title">La gestion manuelle classique</h3>
+          <ul class="compare-list">
+            <li class="compare-item bad">
+              <span class="compare-icon">✕</span>
+              <span>Des cahiers d'inscriptions illisibles ou des feuilles Excel mélangées.</span>
+            </li>
+            <li class="compare-item bad">
+              <span class="compare-icon">✕</span>
+              <span>Erreurs de plannings (deux enseignants prévus dans la même salle).</span>
+            </li>
+            <li class="compare-item bad">
+              <span class="compare-icon">✕</span>
+              <span>Difficulté à suivre qui a payé sa mensualité pour chaque groupe.</span>
+            </li>
+            <li class="compare-item bad">
+              <span class="compare-icon">✕</span>
+              <span>Pointage des absences fastidieux sur papier volants.</span>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- After -->
+        <div class="compare-card after">
+          <h3 class="compare-title after-title">Avec AymnEDU</h3>
+          <ul class="compare-list">
+            <li class="compare-item good">
+              <span class="compare-icon">✓</span>
+              <span>Recherche d'élèves instantanée, fiches d'élèves claires et structurées.</span>
+            </li>
+            <li class="compare-item good">
+              <span class="compare-icon">✓</span>
+              <span>Planificateur d'emplois du temps anti-conflits intelligent.</span>
+            </li>
+            <li class="compare-item good">
+              <span class="compare-icon">✓</span>
+              <span>Suivi automatique des caisses, états de paiement et reçus en 1 clic.</span>
+            </li>
+            <li class="compare-item good">
+              <span class="compare-icon">✓</span>
+              <span>Présences enregistrées en 10 secondes depuis mobile ou tablette.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Functional Features Section -->
+  <section id="fonctionnalites" class="section-padding">
+    <div class="container">
+      <div class="text-center features-header" style="max-width: 800px; margin: 0 auto 50px;">
+        <span class="badge">Fonctionnalités</span>
+        <h2>Tout ce dont votre centre a besoin pour réussir</h2>
+        <p style="color: var(--text-secondary); margin-top: 15px;">Une suite d'outils interconnectés conçus pour optimiser chaque tâche de votre administration.</p>
+      </div>
+
+      <!-- Tabs Navigation -->
+      <div class="features-tabs-nav">
+        <button class="tab-btn active" data-tab="eleves">Gestion des élèves</button>
+        <button class="tab-btn" data-tab="groupes">Gestion des groupes</button>
+        <button class="tab-btn" data-tab="paiements">Gestion des paiements</button>
+        <button class="tab-btn" data-tab="plannings">Gestion des emplois du temps</button>
+        <button class="tab-btn" data-tab="presences">Gestion des présences</button>
+      </div>
+
+      <!-- Tab Panes -->
+      <div class="features-tab-content">
+        
+        <!-- Tab 1: Gestion des élèves -->
+        <div id="tab-eleves" class="feature-pane active">
+          <div class="feature-info">
+            <span class="badge" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.2); color: var(--secondary);">01. Inscriptions et Profils</span>
+            <h3>Suivez vos élèves sans effort</h3>
+            <p>Conservez l'historique complet de chaque élève dans une base de données sécurisée. Accédez à leurs coordonnées, leurs groupes, et leur statut administratif en un clin d'œil.</p>
+            <ul class="feature-points">
+              <li class="feature-point">
+                <span class="check-circle">✓</span>
+                <span>Fiche d'inscription rapide (Nom, Prénom, Tél, Niveau scolaire).</span>
+              </li>
+              <li class="feature-point">
+                <span class="check-circle">✓</span>
+                <span>Historique d'activité de l'élève au sein du centre.</span>
+              </li>
+              <li class="feature-point">
+                <span class="check-circle">✓</span>
+                <span>Recherche et filtrage multicritères (par matière, groupe ou statut).</span>
+              </li>
+            </ul>
+          </div>
+          <div class="feature-visual">
+            <div class="interactive-demo-panel">
+              <div class="demo-header">
+                <span>Base Élèves</span>
+                <span class="pill pill-success">Actifs (248)</span>
+              </div>
+              <!-- Simulated UI widget -->
+              <div style="background: rgba(255,255,255,0.02); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; margin-bottom: 8px; font-weight: bold;">
+                  <span>Élève</span>
+                  <span>Niveau</span>
+                  <span>Statut</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.02);">
+                  <span>Amina Benali</span>
+                  <span>Terminal (BAC Sc)</span>
+                  <span class="pill pill-success" style="font-size: 0.7rem; padding: 2px 6px;">Inscrite</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.02);">
+                  <span>Yacine Meziane</span>
+                  <span>4ème AM (BEM)</span>
+                  <span class="pill pill-success" style="font-size: 0.7rem; padding: 2px 6px;">Inscrit</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 6px 0;">
+                  <span>Meriem Touati</span>
+                  <span>3ème AS (BAC Math)</span>
+                  <span class="pill pill-warning" style="font-size: 0.7rem; padding: 2px 6px;">En attente</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Gestion des groupes -->
+        <div id="tab-groupes" class="feature-pane">
+          <div class="feature-info">
+            <span class="badge" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.2); color: var(--secondary);">02. Niveaux & Matières</span>
+            <h3>Organisez vos salles et vos groupes</h3>
+            <p>Structurez vos cours par classes. AymnEDU vous permet de segmenter vos élèves selon les matières, les niveaux (BEM, BAC, Primaire, Langues étrangères) et d'assigner les bons enseignants.</p>
+            <ul class="feature-points">
+              <li class="feature-point">
+                <span class="check-circle">✓</span>
+                <span>Création de groupes limités par capacité de salle.</span>
+              </li>
+              <li class="feature-point">
+                <span class="check-circle">✓</span>
+                <span>Fiche Enseignant liée (matière enseignée, taux de reversement).</span>
+              </li>
+              <li class="feature-point">
+                <span class="check-circle">✓</span>
+                <span>Visualisation instantanée du taux de remplissage des groupes.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="feature-visual">
+            <div class="interactive-demo-panel">
+              <div class="demo-header">
+                <span>Groupes de soutien</span>
+                <span class="pill pill-info">18 Groupes actifs</span>
+              </div>
+              <div style="background: rgba(255,255,255,0.02); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
+                <div style="margin-bottom: 12px;">
+                  <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 4px;">
+                    <span>Maths - Terminal BAC Élite</span>
+                    <span>18/20 places</span>
+                  </div>
+                  <div style="width: 100%; height: 6px; background: var(--bg-tertiary); border-radius: 5px; overflow: hidden;">
+                    <div style="width: 90%; height: 100%; background: var(--primary);"></div>
+                  </div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                  <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 4px;">
+                    <span>Physique - 4ème AM BEM</span>
+                    <span>12/25 places</span>
+                  </div>
+                  <div style="width: 100%; height: 6px; background: var(--bg-tertiary); border-radius: 5px; overflow: hidden;">
+                    <div style="width: 48%; height: 100%; background: var(--secondary);"></div>
+                  </div>
+                </div>
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 4px;">
+                    <span>Anglais - Niveau Kids A1</span>
+                    <span>15/15 places</span>
+                  </div>
+                  <div style="width: 100%; height: 6px; background: var(--bg-tertiary); border-radius: 5px; overflow: hidden;">
+                    <div style="width: 100%; height: 100%; background: var(--accent);"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Gestion des paiements -->
+        <div id="tab-paiements" class="feature-pane">
+          <div class="feature-info">
+            <span class="badge" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.2); color: var(--secondary);">03. Caisse & Encaissements</span>
+            <h3>Suivez les règlements sans erreur</h3>
+            <p>Gérez sereinement votre caisse. Suivez les mensualités, identifiez les élèves en retard de paiement et générez des reçus clairs au moment du paiement de la secrétaire.</p>
+            <ul class="feature-points">
+              <li class="feature-point">
+                <span class="check-circle">✓</span>
+                <span>Impression ou envoi numérique de reçus de paiement.</span>
+              </li>
+              <li class="feature-point">
+                <span class="check-circle">✓</span>
+                <span>Rapports de caisse journaliers / mensuels pour le directeur.</span>
+              </li>
+              <li class="feature-point">
+                <span class="check-circle">✓</span>
+                <span>Filtre d'impayés pour relancer rapidement les concernés.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="feature-visual">
+            <div class="interactive-demo-panel">
+              <div class="demo-header">
+                <span>Facturation Secretary</span>
+                <span class="pill" style="background: rgba(245,158,11,0.1); color: var(--accent);">3 impayés à relancer</span>
+              </div>
+              <div style="background: rgba(255,255,255,0.02); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem;">
+                <div style="background: var(--bg-tertiary); display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.04); margin-bottom: 8px;">
+                  <div>
+                    <div style="font-weight: bold;">Mensualité : Yacine M.</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Physique BEM — Juillet</div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="font-weight: bold; color: var(--primary);">+1 500 DA</div>
+                    <span class="pill pill-success" style="font-size: 0.65rem; padding: 1px 4px;">Payé (Reçu #108)</span>
+                  </div>
+                </div>
+                <div style="background: var(--bg-tertiary); display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.04);">
+                  <div>
+                    <div style="font-weight: bold;">Mensualité : Amina B.</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Math BAC — Juillet</div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="font-weight: bold; color: #ef4444;">2 500 DA</div>
+                    <span class="pill pill-warning" style="font-size: 0.65rem; padding: 1px 4px;">Non Payé</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Gestion des emplois du temps -->
+        <div id="tab-plannings" class="feature-pane">
+          <div class="feature-info">
+            <span class="badge" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.2); color: var(--secondary);">04. Calendrier Interactif</span>
+            <h3>Planification intelligente sans conflits</h3>
+            <p>Construisez vos plannings hebdomadaires en quelques clics. Indiquez la disponibilité des enseignants et les capacités de vos salles physiques pour éviter tout chevauchement.</p>
+            <ul class="feature-points">
+              <li class="feature-point">
+                <span class="check-circle">✓</span>
+                <span>Alerte anti-collision (évite qu'une salle ou qu'un prof soit programmé deux fois).</span>
+              </li>
+              <li class="feature-point">
+                <span class="check-circle">✓</span>
+                <span>Vue calendrier globale claire pour la secrétaire et le gérant.</span>
+              </li>
+              <li class="feature-point">
+                <span class="check-circle">✓</span>
+                <span>Gestion flexible des vacances ou des séances exceptionnelles.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="feature-visual">
+            <div class="interactive-demo-panel">
+              <div class="demo-header">
+                <span>Aperçu Salle A - Vendredi</span>
+                <span class="check-circle">✓</span>
+              </div>
+              <div style="background: rgba(255,255,255,0.02); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.8rem; display: flex; flex-direction: column; gap: 6px;">
+                <div style="display: flex; gap: 8px;">
+                  <span style="color: var(--text-muted); width: 85px;">08h30 - 10h30</span>
+                  <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--primary); padding: 4px 8px; border-radius: 4px; flex-grow: 1;">
+                    <div style="font-weight: bold; color: var(--primary);">Math BAC — Prof. Khelifi</div>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <span style="color: var(--text-muted); width: 85px;">10h30 - 12h30</span>
+                  <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid var(--secondary); padding: 4px 8px; border-radius: 4px; flex-grow: 1;">
+                    <div style="font-weight: bold; color: var(--secondary);">Physique BEM — Prof. Amari</div>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <span style="color: var(--text-muted); width: 85px;">14h00 - 16h00</span>
+                  <div style="background: rgba(255,255,255,0.03); border: 1px dashed var(--border-color); padding: 4px 8px; border-radius: 4px; flex-grow: 1; text-align: center; color: var(--text-secondary); cursor: pointer;">
+                    + Nouveau cours (Libre)
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 5: Gestion des présences -->
+        <div id="tab-presences" class="feature-pane">
+          <div class="feature-info">
+            <span class="badge" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.2); color: var(--secondary);">05. Appel en Classe</span>
+            <h3>Suivi des retards et absences</h3>
+            <p>Les enseignants accèdent à la feuille d'appel numérique simplifiée depuis leur téléphone ou tablette. Fini les listes d'absences manuscrites qui se perdent en fin de journée.</p>
+            <ul class="feature-points">
+              <li class="feature-point">
+                <span class="check-circle">✓</span>
+                <span>Pointage intuitif en 3 clics par cours.</span>
+              </li>
+              <li class="feature-point">
+                <span class="check-circle">✓</span>
+                <span>Historique individuel des absences disponible sur la fiche élève.</span>
+              </li>
+              <li class="feature-point">
+                <span class="check-circle">✓</span>
+                <span>Rapports globaux pour détecter le désengagement de certains élèves.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="feature-visual">
+            <div class="interactive-demo-panel">
+              <div class="demo-header">
+                <span>Appel : Terminale Élite (BAC)</span>
+                <span style="font-size: 0.75rem; color: var(--text-secondary);">20/07/2026</span>
+              </div>
+              <div style="background: rgba(255,255,255,0.02); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span>Benali Amina</span>
+                  <div style="display: flex; gap: 6px;">
+                    <span class="pill pill-success" style="cursor: pointer; font-size: 0.7rem;">Présente</span>
+                  </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 6px;">
+                  <span>Meziane Yacine</span>
+                  <div style="display: flex; gap: 6px;">
+                    <span class="pill pill-warning" style="cursor: pointer; font-size: 0.7rem;">Retard (10m)</span>
+                  </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 6px;">
+                  <span>Touati Meriem</span>
+                  <div style="display: flex; gap: 6px;">
+                    <span class="pill" style="cursor: pointer; background: rgba(239,68,68,0.1); color: #ef4444; font-size: 0.7rem;">Absente</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Calculator Section -->
+  <section id="calculateur" class="section-padding" style="background-color: #0d1323;">
+    <div class="container">
+      <div class="text-center" style="max-width: 800px; margin: 0 auto 60px;">
+        <span class="badge">Tarification Flexible</span>
+        <h2>Un investissement adapté à la taille de votre centre</h2>
+        <p style="color: var(--text-secondary); margin-top: 15px;">Estimez vos besoins et découvrez quel forfait correspond le mieux à votre centre de soutien scolaire.</p>
+      </div>
+
+      <div class="calculator-grid">
+        <!-- Interactive Form slider calculator -->
+        <div class="calc-box">
+          <h3 class="calc-title">Taille de votre établissement</h3>
+          
+          <div class="slider-group">
+            <div class="slider-labels">
+              <span>Nombre d'élèves inscrits</span>
+              <span id="student-count-display" class="slider-value">150</span>
+            </div>
+            <input type="range" id="student-slider" min="50" max="800" step="10" value="150">
+          </div>
+          
+          <div class="calc-metrics">
+            <div class="metric-card">
+              <div class="metric-val green-text" id="calc-hours-saved">~12h</div>
+              <div class="metric-label">De temps administratif gagné par semaine</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommended plan dynamic details -->
+        <div class="pricing-info-container">
+          <div class="pricing-info-card">
+            <div class="pricing-lead-title" id="plan-tier-name">Forfait Petit Centre</div>
+            <div class="pricing-price-text">À partir de <span class="text-gradient-primary" id="plan-price-starting">DA / mois</span></div>
+            <p class="pricing-price-subtext" id="plan-price-description">Idéal pour les structures en plein développement (de 50 à 250 élèves).</p>
+            
+            <ul class="pricing-benefits-list">
+              <li>
+                <div class="check-circle" style="background: rgba(16, 185, 129, 0.1);">✓</div>
+                <span id="plan-feature-1">Inscriptions jusqu'à 250 élèves max</span>
+              </li>
+              <li>
+                <div class="check-circle" style="background: rgba(16, 185, 129, 0.1);">✓</div>
+                <span>Gestion complète des Groupes et Présences</span>
+              </li>
+              <li>
+                <div class="check-circle" style="background: rgba(16, 185, 129, 0.1);">✓</div>
+                <span>Suivi financier et encaissements des secrétaires</span>
+              </li>
+              <li>
+                <div class="check-circle" style="background: rgba(16, 185, 129, 0.1);">✓</div>
+                <span>Support disponible par téléphone en Algérie</span>
+              </li>
+            </ul>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <a href="#contact" class="btn btn-primary text-center">Essayer gratuitement (14 jours)</a>
+              <a href="#contact" class="btn btn-secondary text-center" style="font-size: 0.9rem; padding: 10px;">Demander un devis personnalisé</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Accordion FAQ section -->
+  <section id="faq" class="section-padding">
+    <div class="container">
+      <div class="text-center" style="max-width: 700px; margin: 0 auto 50px;">
+        <span class="badge">Des questions ?</span>
+        <h2>Questions Fréquemment Posées</h2>
+        <p style="color: var(--text-secondary); margin-top: 15px;">Nous répondons aux questions les plus courantes des directeurs de centres de soutien scolaire algériens.</p>
+      </div>
+
+      <div class="faq-container">
+        <!-- FAQ 1 -->
+        <div class="faq-item">
+          <button class="faq-question-btn">
+            <span>Est-ce que le logiciel gère tous les niveaux d'études en Algérie ?</span>
+            <span class="faq-icon-toggle">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Oui, absolument. AymnEDU intègre par défaut la structure du système scolaire algérien. Vous pouvez facilement configurer les matières et les classes préparant au BEM, au BAC, le soutien général du Primaire (1AP à 5AP), ainsi que les cours de langues et les préparations universitaires.</p>
+          </div>
+        </div>
+
+        <!-- FAQ 2 -->
+        <div class="faq-item">
+          <button class="faq-question-btn">
+            <span>Peut-on utiliser le logiciel avec plusieurs secrétaires en simultané ?</span>
+            <span class="faq-icon-toggle">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Oui. AymnEDU prend en charge les comptes multiples avec différents rôles d'utilisation. Le directeur ou propriétaire supervise l'ensemble des données et recettes financières, tandis que les secrétaires gèrent uniquement les inscriptions et les encaissements quotidiens de leur session.</p>
+          </div>
+        </div>
+
+        <!-- FAQ 3 -->
+        <div class="faq-item">
+          <button class="faq-question-btn">
+            <span>Comment se passe le suivi et le versement des enseignants ?</span>
+            <span class="faq-icon-toggle">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Notre module interne de caisse peut comptabiliser le nombre d'heures effectuées ou d'élèves par enseignant. Vous pouvez enregistrer le type de reversement convenu (taux fixe par heure, par étudiant, ou pourcentage) afin de simplifier le calcul exact de leurs honoraires en fin de mois.</p>
+          </div>
+        </div>
+
+        <!-- FAQ 4 -->
+        <div class="faq-item">
+          <button class="faq-question-btn">
+            <span>A-t-on besoin d'une connexion internet fixe (ADSL/Fibre) stable ?</span>
+            <span class="faq-icon-toggle">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>AymnEDU est conçu pour être très léger. Une simple connexion en partage de connexion 4G mobile sur le PC de la secrétaire suffit largement pour faire fonctionner les chargements de pages fluides sans ralentir le travail d'inscription des élèves.</p>
+          </div>
+        </div>
+
+        <!-- FAQ 5 -->
+        <div class="faq-item">
+          <button class="faq-question-btn">
+            <span>Proposez-vous une assistance pour importer nos données d'élèves actuelles ?</span>
+            <span class="faq-icon-toggle">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Tout à fait. Si vous utilisez actuellement des fichiers Excel ou des cahiers d'inscriptions, notre support technique situé localement en Algérie vous accompagne gratuitement pour importer et structurer votre liste de départ dans AymnEDU.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Contact & Lead Form Section -->
+  <section id="contact" class="section-padding" style="background-color: #0d1323;">
+    <div class="container contact-container">
+      <div class="contact-info">
+        <span class="badge" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: var(--primary);">Contact & Démo</span>
+        <h3>Prêt à simplifier la gestion de votre école ?</h3>
+        <p>Prenez rendez-vous pour une démonstration personnalisée en ligne de 15 minutes, ou démarrez votre essai gratuit de 14 jours immédiatement.</p>
+        
+        <div class="guarantee-badges">
+          <div class="badge-item">
+            <div class="badge-icon">⚡</div>
+            <div class="badge-text">
+              <div class="badge-text-title">Mise en route rapide</div>
+              <div class="badge-text-desc">Votre compte actif et prêt à l'emploi en moins de 24h.</div>
+            </div>
+          </div>
+          <div class="badge-item">
+            <div class="badge-icon">📞</div>
+            <div class="badge-text">
+              <div class="badge-text-title">Support dédié en Algérie</div>
+              <div class="badge-text-desc">Assistance téléphonique directe pour vous guider pas à pas.</div>
+            </div>
+          </div>
+          <div class="badge-item">
+            <div class="badge-icon">🔒</div>
+            <div class="badge-text">
+              <div class="badge-text-title">Sécurité des données garantie</div>
+              <div class="badge-text-desc">Sauvegardes quotidiennes chiffrées de toute votre comptabilité.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-form-box">
+        <h3 class="form-title">Planifiez votre essai gratuit de 14 jours</h3>
+        <form id="demo-form" action="#" method="POST">
+          <div class="form-group-row">
+            <div class="form-field no-margin">
+              <label class="form-label" for="manager-name">Nom du responsable</label>
+              <input class="form-input" type="text" id="manager-name" name="manager" placeholder="Ex: M. Aymn" required>
+            </div>
+            <div class="form-field no-margin">
+              <label class="form-label" for="center-name">Nom du centre scolaire</label>
+              <input class="form-input" type="text" id="center-name" name="center" placeholder="Ex: Centre El Feth" required>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="phone-number">Numéro de téléphone</label>
+            <input class="form-input" type="tel" id="phone-number" name="phone" placeholder="Ex: 0550 12 34 56" required>
+          </div>
+
+          <div class="form-group-row">
+            <div class="form-field no-margin">
+              <label class="form-label" for="wilaya-select">Wilaya</label>
+              <select class="form-input" id="wilaya-select" name="wilaya" required>
+                <option value="" disabled selected>Choisir...</option>
+                <option value="16">16 - Alger</option>
+                <option value="31">31 - Oran</option>
+                <option value="25">25 - Constantine</option>
+                <option value="06">06 - Béjaïa</option>
+                <option value="09">09 - Blida</option>
+                <option value="19">19 - Sétif</option>
+                <option value="35">35 - Boumerdès</option>
+                <option value="15">15 - Tizi Ouzou</option>
+                <option value="autre">Autre wilaya</option>
+              </select>
+            </div>
+            <div class="form-field no-margin">
+              <label class="form-label" for="students-volume">Nombre d'élèves (Est.)</label>
+              <select class="form-input" id="students-volume" name="volume" required>
+                <option value="" disabled selected>Choisir...</option>
+                <option value="small">Moins de 100 élèves</option>
+                <option value="medium">100 à 300 élèves</option>
+                <option value="large">300 à 800 élèves</option>
+                <option value="enterprise">Plus de 800 élèves</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary form-submit-btn">Démarrer mon essai de 14 jours</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <h3><span>Aymn</span>EDU</h3>
+        <p>Le logiciel de gestion tout-en-un conçu pour simplifier l'administration et libérer du temps pour les centres de soutien scolaire en Algérie.</p>
+        <div style="display: flex; gap: 14px; font-weight: bold; color: var(--primary);">
+          <span>Alger, Algérie</span>
+        </div>
+      </div>
+      
+      <div class="footer-links">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="#accueil">Accueil</a></li>
+          <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+          <li><a href="#calculateur">Tarifs</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4>Légal</h4>
+        <ul>
+          <li><a href="#">Conditions d'utilisation</a></li>
+          <li><a href="#">Politique de confidentialité</a></li>
+          <li><a href="#">Mentions Légales</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p>&copy; 2026 AymnEDU. Tous droits réservés.</p>
+      <p>Propulsé localement pour les écoles de soutien scolaire algériennes.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>
