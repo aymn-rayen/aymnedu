@@ -242,3 +242,4 @@ def downgrade() -> None:
     op.drop_table("utilisateurs")
     role_enum.drop(op.get_bind(), checkfirst=True)
     op.drop_table("centres")
+

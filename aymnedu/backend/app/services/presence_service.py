@@ -71,6 +71,9 @@ def save_presences_batch(db: Session, centre_id: int, items: list[PresenceIn]) -
     if not items:
         return
 
+    from app.services.subscription_service import assert_subscription_active
+    assert_subscription_active(db, centre_id)
+
     eleve_ids = list({item.eleve_id for item in items})
     valid_eleve_rows = db.query(Eleve.id).filter(
         Eleve.id.in_(eleve_ids),

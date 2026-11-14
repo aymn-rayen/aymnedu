@@ -1,13 +1,12 @@
 import { useState } from 'react'
-import { useNavigate, Navigate, Link } from 'react-router-dom'
+import { Navigate, Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import {
-  GraduationCap, Lock, Mail, AlertCircle, Loader2, Eye, EyeOff, ShieldCheck, UserCircle2, BookOpenCheck, Sparkles
+  GraduationCap, Lock, Mail, AlertCircle, Loader2, Eye, EyeOff, ShieldCheck, BookOpenCheck, Sparkles
 } from 'lucide-react'
 
 export default function LoginPage() {
   const { login, user } = useAuth()
-  const navigate = useNavigate()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

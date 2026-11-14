@@ -57,6 +57,9 @@ def list_paiements(
 
 
 def create_paiement(db: Session, centre_id: int, data: PaiementCreate) -> PaiementOut:
+    from app.services.subscription_service import assert_subscription_active
+    assert_subscription_active(db, centre_id)
+
     eleve  = db.query(Eleve).filter(Eleve.id == data.eleve_id,   Eleve.centre_id == centre_id).first()
     groupe = db.query(Groupe).filter(Groupe.id == data.groupe_id, Groupe.centre_id == centre_id).first()
     if not eleve:

@@ -76,6 +76,9 @@ def _get_groupe_raw(db: Session, centre_id: int, groupe_id: int) -> Groupe:
 
 
 def create_groupe(db: Session, centre_id: int, data: GroupeCreate) -> GroupeOut:
+    from app.services.subscription_service import assert_subscription_active
+    assert_subscription_active(db, centre_id)
+
     if data.enseignant_id:
         ens = db.query(Utilisateur).filter(
             Utilisateur.id == data.enseignant_id,

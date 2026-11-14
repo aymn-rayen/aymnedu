@@ -102,18 +102,19 @@ def get_subscription_info(db: Session, centre_id: int) -> SubscriptionInfoOut:
     )
 
 
-def assert_subscription_allows_write(db: Session, centre_id: int):
+def assert_subscription_active(db: Session, centre_id: int) -> SubscriptionInfoOut:
     """
-    Vérifie si le centre a le droit d'inscrire de nouveaux élèves ou d'enregistrer des opérations.
-    Lève HTTP 402 si l'essai ou l'abonnement a expiré.
+    Vérifie si le centre a un abonnement ou un essai actif (non expiré, non suspendu).
+    Lève HTTP 402 Payment Required si l'essai ou l'abonnement a expiré.
+    Lève HTTP 403 Forbidden si le centre a été suspendu ou désactivé.
     """
     sub = get_subscription_info(db, centre_id)
     if sub.is_expired:
         raise HTTPException(
             status_code=status.HTTP_402_PAYMENT_REQUIRED,
             detail=(
-                f"L'abonnement du centre « {sub.nom_centre} » est expiré. "
-                "Veuillez renouveler votre forfait Soutien Pro pour continuer à enregistrer de nouvelles entrées."
+                f"L'accès en écriture du centre « {sub.nom_centre} » est bloqué : la période d'essai de 14 jours a expiré. "
+                "Veuillez activer votre abonnement Soutien Pro pour continuer à utiliser la plateforme."
             )
         )
     if sub.subscription_status == "suspended":
@@ -121,6 +122,14 @@ def assert_subscription_allows_write(db: Session, centre_id: int):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Ce centre d'étude a été suspendu par l'administration AymnEDU."
         )
+    return sub
+
+
+def assert_subscription_allows_write(db: Session, centre_id: int):
+    """
+    Vérifie l'abonnement actif ET le quota d'élèves pour la création de nouveaux élèves.
+    """
+    sub = assert_subscription_active(db, centre_id)
     if sub.current_eleves >= sub.max_eleves:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

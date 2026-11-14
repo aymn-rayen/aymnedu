@@ -1,8 +1,13 @@
+import { useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/hooks/useAuth'
+import { subscriptionApi } from '@/api'
+import { SubscriptionModal } from '@/components/subscription/SubscriptionModal'
 import {
   LayoutDashboard, Users, BookOpen, CreditCard, ClipboardCheck,
-  Calendar, LogOut, GraduationCap, School, Users2
+  Calendar, LogOut, GraduationCap, School, Users2, Sparkles,
+  AlertTriangle, Clock, ChevronRight
 } from 'lucide-react'
 
 // ── Navigation items per role ──────────────────────────────────────────────
@@ -40,6 +45,13 @@ const ROLE_BADGES: Record<string, { label: string; color: string }> = {
 export function DashboardLayout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const [isSubModalOpen, setIsSubModalOpen] = useState(false)
+
+  const { data: sub } = useQuery({
+    queryKey: ['subscription'],
+    queryFn: subscriptionApi.get,
+    staleTime: 60 * 1000,
+  })
 
   const handleLogout = () => {
     logout()
@@ -48,6 +60,9 @@ export function DashboardLayout() {
 
   const navItems = NAV_BY_ROLE[user?.role ?? 'directeur'] ?? NAV_BY_ROLE.directeur
   const roleBadge = ROLE_BADGES[user?.role ?? 'directeur']
+
+  const isExpired = sub?.is_expired || sub?.subscription_status === 'expired'
+  const isTrial = sub?.subscription_status === 'trial'
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#0b0f19]">
@@ -81,6 +96,35 @@ export function DashboardLayout() {
           ))}
         </nav>
 
+        {/* Subscription Sidebar Widget (Directeur) */}
+        {sub && user?.role === 'directeur' && (
+          <div className="px-3 pb-3">
+            <button
+              onClick={() => setIsSubModalOpen(true)}
+              className="w-full text-left p-3 rounded-xl bg-slate-800/40 hover:bg-slate-800/80 border border-white/5 hover:border-primary-500/30 transition-all duration-150 group"
+            >
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-primary-400" /> Abonnement
+                </span>
+                {isExpired ? (
+                  <span className="text-[10px] font-bold text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded">Expiré</span>
+                ) : isTrial ? (
+                  <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">
+                    Essai {sub.days_remaining}j
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">Pro</span>
+                )}
+              </div>
+              <div className="flex items-center justify-between text-[11px] text-slate-300">
+                <span className="truncate">{sub.nom_centre || 'Mon Centre'}</span>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-primary-400 transition-colors" />
+              </div>
+            </button>
+          </div>
+        )}
+
         {/* User Card */}
         <div className="px-3 py-4 border-t border-white/5">
           <div className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/5 cursor-pointer group">
@@ -104,12 +148,52 @@ export function DashboardLayout() {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
-        <div className="p-6 lg:p-8">
+      {/* Main Content Area */}
+      <main className="flex-1 flex flex-col overflow-y-auto">
+        {/* Top Subscription Notification Banners */}
+        {isExpired ? (
+          <div className="bg-red-500/15 border-b border-red-500/30 px-6 py-2.5 flex items-center justify-between flex-wrap gap-2 text-xs text-red-200">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0" />
+              <span>
+                <strong>Période d'essai terminée (14 jours écoulés).</strong> L'enregistrement de nouvelles données (élèves, groupes, paiements) est bloqué.
+              </span>
+            </div>
+            <button
+              onClick={() => setIsSubModalOpen(true)}
+              className="px-3 py-1 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg transition-colors shadow-sm"
+            >
+              Activer mon forfait Pro (4 500 DA)
+            </button>
+          </div>
+        ) : isTrial ? (
+          <div className="bg-amber-500/10 border-b border-amber-500/20 px-6 py-2 flex items-center justify-between flex-wrap gap-2 text-xs text-amber-200">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-amber-400 flex-shrink-0" />
+              <span>
+                Période d'essai Starter : <strong>{sub?.days_remaining ?? 0} jour(s) restant(s)</strong> • Élèves : {sub?.current_eleves ?? 0}/{sub?.max_eleves ?? 50}.
+              </span>
+            </div>
+            <button
+              onClick={() => setIsSubModalOpen(true)}
+              className="px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-semibold rounded-lg border border-amber-500/30 transition-colors"
+            >
+              Passer au Forfait Pro
+            </button>
+          </div>
+        ) : null}
+
+        <div className="p-6 lg:p-8 flex-1">
           <Outlet />
         </div>
       </main>
+
+      {/* Subscription Modal */}
+      <SubscriptionModal
+        isOpen={isSubModalOpen}
+        onClose={() => setIsSubModalOpen(false)}
+        subscription={sub}
+      />
     </div>
   )
 }

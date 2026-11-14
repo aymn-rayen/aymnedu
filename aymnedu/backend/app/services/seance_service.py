@@ -100,6 +100,9 @@ def list_seances(db: Session, centre_id: int) -> list[SeanceOut]:
 
 
 def create_seance(db: Session, centre_id: int, data: SeanceCreate) -> SeanceOut:
+    from app.services.subscription_service import assert_subscription_active
+    assert_subscription_active(db, centre_id)
+
     groupe = db.query(Groupe).filter(Groupe.id == data.groupe_id, Groupe.centre_id == centre_id).first()
     if not groupe:
         raise HTTPException(status_code=404, detail="Groupe non trouvé")
