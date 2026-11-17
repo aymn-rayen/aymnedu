@@ -16,8 +16,12 @@ export const authApi = {
     apiClient.post<AuthTokens>('/auth/register', data).then(r => r.data),
   me: () =>
     apiClient.get<User>('/auth/me').then(r => r.data),
-  refresh: (refresh_token: string) =>
+  refresh: (refresh_token?: string) =>
     apiClient.post<AuthTokens>('/auth/refresh', { refresh_token }).then(r => r.data),
+  logout: (refresh_token?: string) =>
+    apiClient.post('/auth/logout', { refresh_token }).catch(() => {}),
+  revokeAll: () =>
+    apiClient.post<{ message: string }>('/auth/revoke-all').then(r => r.data),
 }
 
 // ── Utilisateurs (gestion des rôles par l'admin) ─────────────────────────

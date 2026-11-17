@@ -228,8 +228,30 @@ def upgrade() -> None:
         sa.Column("heure_fin", sa.Time(), nullable=False),
     )
 
+    # ── refresh_tokens ───────────────────────────────────────────────────────
+    op.create_table(
+        "refresh_tokens",
+        sa.Column("id", sa.Integer(), primary_key=True, index=True),
+        sa.Column(
+            "user_id",
+            sa.Integer(),
+            sa.ForeignKey("utilisateurs.id", ondelete="CASCADE"),
+            nullable=False,
+            index=True,
+        ),
+        sa.Column("jti", sa.String(64), unique=True, index=True, nullable=False),
+        sa.Column("family_id", sa.String(64), index=True, nullable=False),
+        sa.Column("token_hash", sa.String(64), nullable=False),
+        sa.Column("expires_at", sa.DateTime(), nullable=False, index=True),
+        sa.Column("revoked_at", sa.DateTime(), nullable=True, index=True),
+        sa.Column("created_at", sa.DateTime(), server_default=sa.text("now()")),
+        sa.Column("user_agent", sa.String(255), nullable=True),
+        sa.Column("ip_address", sa.String(50), nullable=True),
+    )
+
 
 def downgrade() -> None:
+    op.drop_table("refresh_tokens")
     op.drop_table("seances")
     op.drop_table("presences")
     presence_statut_enum.drop(op.get_bind(), checkfirst=True)

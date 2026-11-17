@@ -1,5 +1,7 @@
 import logging
+from typing import Optional
 from starlette.requests import Request
+from starlette.responses import Response
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -11,6 +13,14 @@ from app.core.security import (
     verify_password, hash_password, create_access_token, create_refresh_token, decode_token
 )
 from app.models import Utilisateur, Centre, RoleEnum
+from app.services.session_service import (
+    issue_tokens,
+    rotate_refresh_token,
+    revoke_token,
+    revoke_all_sessions,
+    clear_refresh_cookie,
+    COOKIE_REFRESH_NAME,
+)
 
 logger = logging.getLogger("aymnedu")
 
@@ -25,7 +35,10 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
 
 class RefreshRequest(BaseModel):
-    refresh_token: str
+    refresh_token: Optional[str] = None
+
+class LogoutRequest(BaseModel):
+    refresh_token: Optional[str] = None
 
 class UserOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -81,20 +94,16 @@ def require_role(*roles: str):
 # ── Endpoints ─────────────────────────────────────────────────────
 @router.post("/login", response_model=TokenResponse)
 @limiter.limit("5/minute")
-def login(request: Request, body: LoginRequest, db: Session = Depends(get_db)):
+def login(request: Request, response: Response, body: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(Utilisateur).filter(Utilisateur.email == body.email).first()
     if not user or not verify_password(body.password, user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Identifiants incorrects")
-    data = {"sub": str(user.id), "centre_id": user.centre_id}
-    return TokenResponse(
-        access_token=create_access_token(data),
-        refresh_token=create_refresh_token(data),
-    )
+    return issue_tokens(db, user, request=request, response=response)
 
 
 @router.post("/register", response_model=TokenResponse)
 @limiter.limit("5/minute")
-def register(request: Request, body: RegisterRequest, db: Session = Depends(get_db)):
+def register(request: Request, response: Response, body: RegisterRequest, db: Session = Depends(get_db)):
     # Vérifier l'email
     existing_user = db.query(Utilisateur).filter(Utilisateur.email == body.email).first()
     if existing_user:
@@ -133,11 +142,7 @@ def register(request: Request, body: RegisterRequest, db: Session = Depends(get_
         db.commit()
         db.refresh(director)
         
-        data = {"sub": str(director.id), "centre_id": director.centre_id}
-        return TokenResponse(
-            access_token=create_access_token(data),
-            refresh_token=create_refresh_token(data),
-        )
+        return issue_tokens(db, director, request=request, response=response)
     except Exception:
         db.rollback()
         logger.exception("Erreur lors de l'inscription")
@@ -148,19 +153,40 @@ def register(request: Request, body: RegisterRequest, db: Session = Depends(get_
 
 
 @router.post("/refresh", response_model=TokenResponse)
-@limiter.limit("10/minute")
-def refresh(request: Request, body: RefreshRequest, db: Session = Depends(get_db)):
-    payload = decode_token(body.refresh_token)
-    if not payload or payload.get("type") != "refresh":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Refresh token invalide")
-    user = db.query(Utilisateur).filter(Utilisateur.id == int(payload["sub"])).first()
-    if not user or not user.is_active:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Utilisateur non trouvé")
-    data = {"sub": str(user.id), "centre_id": user.centre_id}
-    return TokenResponse(
-        access_token=create_access_token(data),
-        refresh_token=create_refresh_token(data),
-    )
+@limiter.limit("20/minute")
+def refresh(
+    request: Request,
+    response: Response,
+    body: Optional[RefreshRequest] = None,
+    db: Session = Depends(get_db)
+):
+    token_str = (body.refresh_token if body and body.refresh_token else None) or request.cookies.get(COOKIE_REFRESH_NAME)
+    if not token_str:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Refresh token manquant")
+    return rotate_refresh_token(db, token_str, request=request, response=response)
+
+
+@router.post("/logout")
+def logout(
+    request: Request,
+    response: Response,
+    body: Optional[LogoutRequest] = None,
+    db: Session = Depends(get_db),
+):
+    token_str = (body.refresh_token if body and body.refresh_token else None) or request.cookies.get(COOKIE_REFRESH_NAME)
+    revoke_token(db, raw_refresh_token=token_str, response=response)
+    return {"message": "Déconnexion réussie et session révoquée"}
+
+
+@router.post("/revoke-all")
+def revoke_all(
+    response: Response,
+    db: Session = Depends(get_db),
+    current_user: Utilisateur = Depends(get_current_user),
+):
+    count = revoke_all_sessions(db, current_user.id)
+    clear_refresh_cookie(response)
+    return {"message": f"{count} session(s) révoquée(s) avec succès"}
 
 
 @router.get("/me", response_model=UserOut)
@@ -232,7 +258,7 @@ def list_roles_for_centre(
 
 @router.post("/login-role", response_model=TokenResponse)
 @limiter.limit("5/minute")
-def login_by_role(request: Request, body: LoginRoleRequest, db: Session = Depends(get_db)):
+def login_by_role(request: Request, response: Response, body: LoginRoleRequest, db: Session = Depends(get_db)):
     """
     Connexion par sélection de rôle :
     1. L'utilisateur choisit son école (centre_id)
@@ -285,8 +311,4 @@ def login_by_role(request: Request, body: LoginRoleRequest, db: Session = Depend
             )
         authenticated_user = user
 
-    data = {"sub": str(authenticated_user.id), "centre_id": authenticated_user.centre_id}
-    return TokenResponse(
-        access_token=create_access_token(data),
-        refresh_token=create_refresh_token(data),
-    )
+    return issue_tokens(db, authenticated_user, request=request, response=response)

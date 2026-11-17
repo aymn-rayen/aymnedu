@@ -61,6 +61,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const logout = () => {
+    const refreshToken = localStorage.getItem('refresh_token') || undefined
+    import('@/api').then(({ authApi }) => {
+      authApi.logout(refreshToken)
+    })
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
     setUser(null)

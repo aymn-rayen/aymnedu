@@ -190,3 +190,21 @@ class Seance(Base):
 
     groupe = relationship("Groupe", back_populates="seances")
     enseignant = relationship("Utilisateur")
+
+
+# ── Refresh Token (Session & Rotation) ───────────────────────────────────────
+class RefreshToken(Base):
+    __tablename__ = "refresh_tokens"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("utilisateurs.id", ondelete="CASCADE"), nullable=False, index=True)
+    jti = Column(String(64), unique=True, index=True, nullable=False)
+    family_id = Column(String(64), index=True, nullable=False)
+    token_hash = Column(String(64), nullable=False)  # SHA-256 du refresh token
+    expires_at = Column(DateTime, nullable=False, index=True)
+    revoked_at = Column(DateTime, nullable=True, default=None, index=True)
+    created_at = Column(DateTime, server_default=func.now())
+    user_agent = Column(String(255), nullable=True)
+    ip_address = Column(String(50), nullable=True)
+
+    user = relationship("Utilisateur", backref="refresh_tokens")
