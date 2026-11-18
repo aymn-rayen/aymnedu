@@ -19,6 +19,7 @@ from app.api.routes import (
     dashboard_router,
     utilisateurs_router,
     subscription_router,
+    admin_router,
 )
 
 # ── Structured Logging ────────────────────────────────────────────────────────
@@ -84,6 +85,7 @@ app.include_router(emplois_router,     prefix=PREFIX)
 app.include_router(dashboard_router,   prefix=PREFIX)
 app.include_router(utilisateurs_router, prefix=PREFIX)
 app.include_router(subscription_router, prefix=PREFIX)
+app.include_router(admin_router,        prefix=PREFIX)
 
 
 @app.get("/", tags=["health"])

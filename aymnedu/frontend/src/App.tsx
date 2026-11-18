@@ -12,6 +12,7 @@ import PresencesPage from '@/pages/PresencesPage'
 import PlanningPage from '@/pages/PlanningPage'
 import EnseignantsPage from '@/pages/EnseignantsPage'
 import RolesPage from '@/pages/RolesPage'
+import SuperAdminPage from '@/pages/SuperAdminPage'
 
 // ── Protected Route ──────────────────────────────────────────────────────────
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -43,6 +44,8 @@ export default function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/register" element={<RegisterCenterPage />} />
         <Route path="/app/login" element={<LoginPage />} />
+        <Route path="/admin" element={<SuperAdminPage />} />
+        <Route path="/admin/*" element={<SuperAdminPage />} />
 
         {/* Private Routes (Protected) */}
         <Route

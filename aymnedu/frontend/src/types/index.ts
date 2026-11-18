@@ -192,3 +192,49 @@ export interface PaymentInstructions {
   instructions: string
   contact_support: string
 }
+
+// ===== Super Admin Platform =====
+export interface AdminStats {
+  total_centres: number
+  active_trials: number
+  active_paid: number
+  expired_centres: number
+  total_eleves: number
+  mrr_estime_dzd: number
+}
+
+export interface CentreAdminView {
+  id: number
+  nom: string
+  wilaya?: string
+  telephone?: string
+  subscription_plan: string
+  subscription_status: string
+  trial_ends_at?: string
+  subscription_expires_at?: string
+  max_eleves: number
+  is_active: boolean
+  created_at?: string
+  total_eleves: number
+}
+
+export interface LicenseVoucher {
+  id: number
+  code: string
+  plan: string
+  duration_days: number
+  max_eleves: number
+  is_redeemed: boolean
+  redeemed_by_centre_id?: number
+  redeemed_by_centre_nom?: string
+  redeemed_at?: string
+  created_at?: string
+  note?: string
+}
+
+export interface AdminLoginResponse {
+  access_token: string
+  token_type: string
+  admin_name: string
+  admin_email: string
+}

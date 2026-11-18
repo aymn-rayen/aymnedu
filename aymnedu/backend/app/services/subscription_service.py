@@ -4,7 +4,7 @@ from fastapi import HTTPException, status
 from pydantic import BaseModel
 from typing import Optional
 
-from app.models import Centre, Eleve
+from app.models import Centre, Eleve, LicenseVoucher
 
 
 class SubscriptionInfoOut(BaseModel):
@@ -142,11 +142,8 @@ def assert_subscription_allows_write(db: Session, centre_id: int):
 
 def activate_subscription_code(db: Session, centre_id: int, code: str) -> SubscriptionInfoOut:
     """
-    Active un code de licence ou prolonge la période de validité.
-    Codes supportés pour le lancement :
-      - AYMN-PRO-1MOIS : 1 mois Soutien Pro (30 jours)
-      - AYMN-PRO-1AN   : 1 an Soutien Pro (365 jours)
-      - AYMN-TRIAL-14  : Prolongation essai de 14 jours
+    Active un code de licence unique adossé à la table `license_vouchers`.
+    Le code ne peut être utilisé qu'une seule fois.
     """
     clean_code = code.strip().upper()
     centre = db.query(Centre).filter(Centre.id == centre_id).first()
@@ -155,26 +152,34 @@ def activate_subscription_code(db: Session, centre_id: int, code: str) -> Subscr
 
     now = datetime.now()
 
-    if clean_code in ("AYMN-PRO-1MOIS", "PRO30", "AYMNEDU30"):
-        centre.subscription_plan = "pro"
-        centre.subscription_status = "active"
-        centre.subscription_expires_at = now + timedelta(days=30)
-        centre.max_eleves = 500
-    elif clean_code in ("AYMN-PRO-1AN", "PRO365", "AYMNEDU365"):
-        centre.subscription_plan = "pro"
-        centre.subscription_status = "active"
-        centre.subscription_expires_at = now + timedelta(days=365)
-        centre.max_eleves = 2000
-    elif clean_code in ("AYMN-TRIAL-14", "TEST14"):
-        centre.subscription_plan = "starter"
-        centre.subscription_status = "trial"
-        centre.trial_ends_at = now + timedelta(days=14)
-        centre.max_eleves = 50
-    else:
+    # Recherche du coupon en base de données
+    voucher = db.query(LicenseVoucher).filter(
+        LicenseVoucher.code == clean_code,
+        LicenseVoucher.is_redeemed == False  # noqa: E712
+    ).first()
+
+    if not voucher:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Code d'activation invalide ou expiré. Contactez le support AymnEDU au +213 550 12 34 56."
+            detail="Code d'activation invalide, expiré ou déjà utilisé. Contactez le support AymnEDU au +213 550 12 34 56."
         )
+
+    # Base de calcul de l'expiration : si déjà actif, prolonger, sinon démarrer maintenant
+    base_date = now
+    if centre.subscription_expires_at:
+        exp = centre.subscription_expires_at.replace(tzinfo=None) if centre.subscription_expires_at.tzinfo else centre.subscription_expires_at
+        if exp > now:
+            base_date = exp
+
+    centre.subscription_plan = voucher.plan
+    centre.subscription_status = "active"
+    centre.subscription_expires_at = base_date + timedelta(days=voucher.duration_days)
+    centre.max_eleves = voucher.max_eleves
+
+    # Consommer le voucher (usage unique)
+    voucher.is_redeemed = True
+    voucher.redeemed_by_centre_id = centre.id
+    voucher.redeemed_at = now
 
     db.commit()
     db.refresh(centre)

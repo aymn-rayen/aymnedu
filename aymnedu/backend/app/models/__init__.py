@@ -208,3 +208,34 @@ class RefreshToken(Base):
     ip_address = Column(String(50), nullable=True)
 
     user = relationship("Utilisateur", backref="refresh_tokens")
+
+
+# ── License Voucher (Coupons prépayés à usage unique) ────────────────────────
+class LicenseVoucher(Base):
+    __tablename__ = "license_vouchers"
+
+    id = Column(Integer, primary_key=True, index=True)
+    code = Column(String(50), unique=True, index=True, nullable=False)
+    plan = Column(String(50), nullable=False, default="pro")            # "starter" | "pro"
+    duration_days = Column(Integer, nullable=False, default=30)         # 30, 90, 365
+    max_eleves = Column(Integer, nullable=False, default=500)
+    is_redeemed = Column(Boolean, default=False, nullable=False, index=True)
+    redeemed_by_centre_id = Column(Integer, ForeignKey("centres.id", ondelete="SET NULL"), nullable=True)
+    redeemed_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+    note = Column(String(255), nullable=True)
+
+    redeemed_by = relationship("Centre")
+
+
+# ── Platform Admin (Super-Admin AymnEDU) ────────────────────────────────────
+class PlatformAdmin(Base):
+    __tablename__ = "platform_admins"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(200), unique=True, index=True, nullable=False)
+    hashed_password = Column(String(255), nullable=False)
+    full_name = Column(String(200), nullable=False)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, server_default=func.now())
+

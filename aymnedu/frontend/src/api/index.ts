@@ -130,4 +130,24 @@ export const subscriptionApi = {
     apiClient.get<import('@/types').PaymentInstructions>('/subscription/instructions').then(r => r.data),
 }
 
+// ── Super Admin Platform API ───────────────────────────────────────────────
+export const adminApi = {
+  login: (data: { email: string; password: string }) =>
+    apiClient.post<import('@/types').AdminLoginResponse>('/admin/login', data).then(r => r.data),
+  me: () =>
+    apiClient.get<{ id: number; email: string; full_name: string }>('/admin/me').then(r => r.data),
+  stats: () =>
+    apiClient.get<import('@/types').AdminStats>('/admin/stats').then(r => r.data),
+  centres: () =>
+    apiClient.get<import('@/types').CentreAdminView[]>('/admin/centres').then(r => r.data),
+  activateCentre: (id: number, data: { plan: string; duration_days: number; max_eleves: number; note?: string }) =>
+    apiClient.post(`/admin/centres/${id}/activate`, data).then(r => r.data),
+  toggleStatus: (id: number) =>
+    apiClient.post(`/admin/centres/${id}/toggle-status`).then(r => r.data),
+  vouchers: () =>
+    apiClient.get<import('@/types').LicenseVoucher[]>('/admin/vouchers').then(r => r.data),
+  createVouchers: (data: { plan: string; duration_days: number; max_eleves: number; count: number; note?: string }) =>
+    apiClient.post<import('@/types').LicenseVoucher[]>('/admin/vouchers', data).then(r => r.data),
+}
+
 

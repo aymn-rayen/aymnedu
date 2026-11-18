@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import pytest
-from app.models import Centre, Utilisateur, RoleEnum, Eleve, Groupe
+from app.models import Centre, Utilisateur, RoleEnum, Eleve, Groupe, LicenseVoucher
 from app.services.subscription_service import get_subscription_info, activate_subscription_code
 
 
@@ -64,18 +64,29 @@ def test_expired_trial_blocks_writes_with_402(client, db_session, create_centre_
 
 
 def test_activate_subscription_restores_write_access(client, db_session, create_centre_and_user):
-    """Vérifie que l'activation d'un code de licence débloque immédiatement le centre."""
+    """Vérifie que l'activation d'un code de licence unique débloque immédiatement le centre, et qu'un code réutilisé échoue."""
     centre, user, headers = create_centre_and_user("Centre A Débloquer", "dir@debloquer.dz")
+
+    # Créer un voucher unique en base
+    voucher = LicenseVoucher(
+        code="AYMN-PRO30-TEST-ABCD",
+        plan="pro",
+        duration_days=30,
+        max_eleves=500,
+        is_redeemed=False,
+    )
+    db_session.add(voucher)
+    db_session.commit()
 
     # Expirer le centre
     centre.subscription_status = "expired"
     centre.trial_ends_at = datetime.now() - timedelta(days=5)
     db_session.commit()
 
-    # Activer le forfait Pro 1 mois
+    # 1. Activer avec le code valide
     res_act = client.post(
         "/api/v1/subscription/activate",
-        json={"code": "AYMN-PRO-1MOIS"},
+        json={"code": "AYMN-PRO30-TEST-ABCD"},
         headers=headers,
     )
     assert res_act.status_code == 200
@@ -87,7 +98,16 @@ def test_activate_subscription_restores_write_access(client, db_session, create_
     assert act_data["max_eleves"] == 500
     assert act_data["days_remaining"] >= 29
 
-    # Vérifier que l'écriture d'élève refonctionne immédiatement
+    # 2. Tenter de réutiliser le même coupon -> doit échouer en 400
+    res_reuse = client.post(
+        "/api/v1/subscription/activate",
+        json={"code": "AYMN-PRO30-TEST-ABCD"},
+        headers=headers,
+    )
+    assert res_reuse.status_code == 400
+    assert "invalide, expiré ou déjà utilisé" in res_reuse.json()["detail"]
+
+    # 3. Vérifier que l'écriture d'élève refonctionne immédiatement
     res_eleve = client.post(
         "/api/v1/eleves",
         json={"prenom": "Nassim", "nom": "Saidi", "niveau": "4AM"},

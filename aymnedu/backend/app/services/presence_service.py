@@ -83,10 +83,17 @@ def save_presences_batch(db: Session, centre_id: int, items: list[PresenceIn]) -
 
     # Charger toutes les présences existantes en 1 seule requête
     groupe_ids = list({item.groupe_id for item in items})
+    valid_groupe_rows = db.query(Groupe.id).filter(
+        Groupe.id.in_(groupe_ids),
+        Groupe.centre_id == centre_id,
+        Groupe.deleted_at == None,  # noqa: E711
+    ).all()
+    valid_groupes = {row[0] for row in valid_groupe_rows}
+
     dates = list({item.date_seance for item in items})
 
     existing_presences = db.query(Presence).filter(
-        Presence.groupe_id.in_(groupe_ids),
+        Presence.groupe_id.in_(list(valid_groupes)),
         Presence.date_seance.in_(dates),
         Presence.eleve_id.in_(list(valid_eleves)),
     ).all()
@@ -94,7 +101,7 @@ def save_presences_batch(db: Session, centre_id: int, items: list[PresenceIn]) -
     existing_map = {(p.groupe_id, p.date_seance, p.eleve_id): p for p in existing_presences}
 
     for item in items:
-        if item.eleve_id not in valid_eleves:
+        if item.eleve_id not in valid_eleves or item.groupe_id not in valid_groupes:
             continue
 
         key = (item.groupe_id, item.date_seance, item.eleve_id)

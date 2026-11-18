@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 import type { User, LoginRequest, LoginRoleRequest, RegisterRequest } from '@/types'
+import { setAccessToken } from '@/api/client'
 
 interface AuthContextType {
   user: User | null
@@ -17,27 +18,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token')
-    if (token) {
-      import('@/api').then(({ authApi }) =>
-        authApi.me()
-          .then(setUser)
-          .catch(() => {
-            localStorage.removeItem('access_token')
-            localStorage.removeItem('refresh_token')
-          })
-          .finally(() => setIsLoading(false))
-      )
-    } else {
-      setIsLoading(false)
-    }
+    // Purge any lingering legacy tokens in localStorage from older versions
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
+
+    // Initial check: exchange HttpOnly cookie for a fresh in-memory access token
+    import('@/api').then(({ authApi }) => {
+      authApi.refresh()
+        .then((tokens) => {
+          setAccessToken(tokens.access_token)
+          return authApi.me()
+        })
+        .then((me) => {
+          setUser(me)
+        })
+        .catch(() => {
+          setAccessToken(null)
+          setUser(null)
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
+    })
   }, [])
 
   const login = async (data: LoginRequest) => {
     const { authApi } = await import('@/api')
     const tokens = await authApi.login(data)
-    localStorage.setItem('access_token', tokens.access_token)
-    localStorage.setItem('refresh_token', tokens.refresh_token)
+    setAccessToken(tokens.access_token)
     const me = await authApi.me()
     setUser(me)
   }
@@ -45,8 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginByRole = async (data: LoginRoleRequest) => {
     const { authApi } = await import('@/api')
     const tokens = await authApi.loginByRole(data)
-    localStorage.setItem('access_token', tokens.access_token)
-    localStorage.setItem('refresh_token', tokens.refresh_token)
+    setAccessToken(tokens.access_token)
     const me = await authApi.me()
     setUser(me)
   }
@@ -54,19 +61,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (data: RegisterRequest) => {
     const { authApi } = await import('@/api')
     const tokens = await authApi.register(data)
-    localStorage.setItem('access_token', tokens.access_token)
-    localStorage.setItem('refresh_token', tokens.refresh_token)
+    setAccessToken(tokens.access_token)
     const me = await authApi.me()
     setUser(me)
   }
 
   const logout = () => {
-    const refreshToken = localStorage.getItem('refresh_token') || undefined
     import('@/api').then(({ authApi }) => {
-      authApi.logout(refreshToken)
+      authApi.logout()
     })
-    localStorage.removeItem('access_token')
-    localStorage.removeItem('refresh_token')
+    setAccessToken(null)
     setUser(null)
   }
 
