@@ -1,10 +1,42 @@
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from fastapi import HTTPException
 from typing import Optional, List
 
-from app.models import Eleve, Paiement, PaiementStatutEnum, InscriptionGroupe, Groupe
+from app.models import Eleve, Paiement, PaiementStatutEnum, InscriptionGroupe
 from app.schemas.eleve import EleveCreate, EleveUpdate, EleveQuickSummary, EleveGroupeSummary, EleveUnpaidPaiement
+
+
+def _build_search_filter(q: str):
+    """
+    Construit un filtre de recherche souple et intelligent :
+    - Correspondance si le prénom contient q ou le nom contient q
+    - Correspondance sur le nom complet combiné : 'Prénom Nom' ou 'Nom Prénom'
+      (ex: 'Chinez Lounis' ou 'Lounis Chinez')
+    - Correspondance par mot individuel séparé par un espace
+    """
+    clean_q = q.strip()
+    like = f"%{clean_q}%"
+
+    full_name_1 = func.concat(Eleve.prenom, " ", Eleve.nom)
+    full_name_2 = func.concat(Eleve.nom, " ", Eleve.prenom)
+
+    conditions = [
+        Eleve.prenom.ilike(like),
+        Eleve.nom.ilike(like),
+        full_name_1.ilike(like),
+        full_name_2.ilike(like),
+    ]
+
+    # Si l'utilisateur tape plusieurs mots (ex: "Chinez Lounis"), on cherche aussi les élèves matchant les 2
+    tokens = [t.strip() for t in clean_q.split() if len(t.strip()) >= 2]
+    if len(tokens) > 1:
+        # Match si tous les tokens se retrouvent dans prenom ou nom
+        for t in tokens:
+            t_like = f"%{t}%"
+            conditions.append(full_name_1.ilike(t_like))
+
+    return or_(*conditions)
 
 
 def list_eleves(
@@ -19,9 +51,8 @@ def list_eleves(
         Eleve.centre_id == centre_id,
         Eleve.deleted_at == None  # noqa: E711
     )
-    if q:
-        like = f"%{q}%"
-        query = query.filter((Eleve.prenom.ilike(like)) | (Eleve.nom.ilike(like)))
+    if q and q.strip():
+        query = query.filter(_build_search_filter(q))
     total = query.count()
     items = query.offset((page - 1) * size).limit(size).all()
     return {
@@ -36,16 +67,17 @@ def list_eleves(
 def search_eleves(db: Session, centre_id: int, q: str) -> list[Eleve]:
     """
     Lightweight full-text search for the groupe-management modal.
-    Returns up to 50 active eleves matching q (prenom or nom).
+    Returns up to 50 active eleves matching q (prenom, nom ou nom complet).
     """
-    like = f"%{q}%"
+    if not q or len(q.strip()) < 2:
+        return []
     return (
         db.query(Eleve)
         .filter(
             Eleve.centre_id == centre_id,
             Eleve.deleted_at == None,  # noqa: E711
             Eleve.statut == "actif",
-            (Eleve.prenom.ilike(like)) | (Eleve.nom.ilike(like))
+            _build_search_filter(q)
         )
         .order_by(Eleve.nom, Eleve.prenom)
         .limit(50)
@@ -57,11 +89,11 @@ def quick_search_cashier(db: Session, centre_id: int, q: str) -> List[EleveQuick
     """
     Killer Feature / Fast Cashier Search (Ctrl + K):
     Returns student card info with class/level, assigned groups, and unpaid dues.
+    Prend en charge la recherche par prénom, nom, ou nom complet ('Chinez Lounis').
     """
     if not q or len(q.strip()) < 2:
         return []
 
-    like = f"%{q.strip()}%"
     eleves = (
         db.query(Eleve)
         .options(
@@ -71,7 +103,7 @@ def quick_search_cashier(db: Session, centre_id: int, q: str) -> List[EleveQuick
         .filter(
             Eleve.centre_id == centre_id,
             Eleve.deleted_at == None,  # noqa: E711
-            (Eleve.prenom.ilike(like)) | (Eleve.nom.ilike(like))
+            _build_search_filter(q)
         )
         .order_by(Eleve.nom, Eleve.prenom)
         .limit(20)
