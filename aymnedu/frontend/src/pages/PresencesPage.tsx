@@ -66,7 +66,7 @@ export default function PresencesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-heading text-2xl font-bold text-white">Gestion des Présences</h1>
+        <h1 className="font-heading text-2xl font-bold text-[#1E293B]">Gestion des Présences</h1>
         <p className="text-slate-400 text-sm mt-1">Appel numérique par groupe</p>
       </div>
 
@@ -107,7 +107,7 @@ export default function PresencesPage() {
           </div>
           <button
             onClick={() => setFeedback(null)}
-            className="text-slate-400 hover:text-white p-1 rounded-lg transition-colors"
+            className="text-slate-400 hover:text-[#1E293B] p-1 rounded-lg transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -117,9 +117,9 @@ export default function PresencesPage() {
       {/* Attendance list */}
       {selectedGroupe && (
         <div className="card space-y-4 animate-fadeIn">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/5 pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E2E8F0] pb-4">
             <div className="space-y-1">
-              <h2 className="font-heading font-semibold text-white flex items-center gap-2">
+              <h2 className="font-heading font-semibold text-[#1E293B] flex items-center gap-2">
                 <ClipboardCheck className="w-5 h-5 text-primary-400" />
                 Feuille d'appel
                 {hasModifications && (
@@ -132,7 +132,7 @@ export default function PresencesPage() {
               {/* Counters */}
               {totalCount > 0 && !isLoading && (
                 <div className="flex items-center gap-3 text-xs pt-1">
-                  <span className="text-slate-400">Total : <strong className="text-white">{totalCount}</strong></span>
+                  <span className="text-slate-400">Total : <strong className="text-[#1E293B]">{totalCount}</strong></span>
                   <span className="text-emerald-400">● {counts.present} Présents</span>
                   <span className="text-amber-400">● {counts.retard} Retards</span>
                   <span className="text-red-400">● {counts.absent} Absents</span>
@@ -145,7 +145,7 @@ export default function PresencesPage() {
                 <button
                   type="button"
                   onClick={() => markAll('present')}
-                  className="btn-secondary flex items-center gap-1.5 py-1.5 px-3 text-xs text-slate-300 hover:text-white"
+                  className="btn-secondary flex items-center gap-1.5 py-1.5 px-3 text-xs text-slate-300 hover:text-[#1E293B]"
                   title="Marquer tous les élèves comme présents"
                 >
                   <CheckCheck className="w-3.5 h-3.5 text-emerald-400" />
@@ -175,9 +175,9 @@ export default function PresencesPage() {
                 return (
                   <div
                     key={p.eleve_id}
-                    className="flex items-center justify-between px-4 py-3 rounded-xl border border-white/5 hover:border-white/10 transition-colors"
+                    className="flex items-center justify-between px-4 py-3 rounded-xl border border-[#E2E8F0] hover:border-[#E2E8F0] transition-colors"
                   >
-                    <span className="font-medium text-white text-sm">{p.eleve_nom}</span>
+                    <span className="font-medium text-[#1E293B] text-sm">{p.eleve_nom}</span>
                     <div className="flex gap-2">
                       {(['present', 'retard', 'absent'] as Presence['statut'][]).map(s => (
                         <button
@@ -191,7 +191,7 @@ export default function PresencesPage() {
                                 : s === 'retard'
                                 ? 'bg-amber-500/20 border-amber-500/40 text-amber-400'
                                 : 'bg-red-500/20 border-red-500/40 text-red-400'
-                              : 'bg-white/2 border-white/5 text-slate-500 hover:border-white/15'
+                              : 'bg-slate-50 border-[#E2E8F0] text-slate-500 hover:border-white/15'
                           }`}
                         >
                           {s === 'present' ? 'Présent' : s === 'retard' ? 'Retard' : 'Absent'}

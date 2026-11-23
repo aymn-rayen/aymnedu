@@ -27,7 +27,6 @@ export default function LoginPage() {
     setIsLoading(true)
     try {
       await login({ email: email.trim(), password })
-      // useAuth sets user state; redirection will be handled or navigated
     } catch (err: any) {
       setError(
         err?.response?.data?.detail ||
@@ -46,32 +45,32 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] flex items-center justify-center p-6">
-      {/* Background glow */}
+    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6 text-[#1E293B]">
+      {/* Background soft glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-3xl" />
       </div>
 
       <div className="relative w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary-500/10 border border-primary-500/20">
-              <GraduationCap className="w-6 h-6 text-primary-400" />
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 shadow-sm">
+              <GraduationCap className="w-6 h-6 text-[#2563EB]" />
             </div>
-            <span className="font-heading text-2xl font-bold text-white">
-              Aymn<span className="text-primary-400">EDU</span>
+            <span className="font-heading text-2xl font-bold text-[#1E293B]">
+              Aymn<span className="text-[#2563EB]">EDU</span>
             </span>
           </Link>
-          <h1 className="text-2xl font-bold text-white">Connexion à votre espace</h1>
-          <p className="text-slate-400 text-sm mt-1">Plateforme de gestion pour centres de soutien scolaire</p>
+          <h1 className="text-2xl font-bold text-[#1E293B]">Connexion à votre espace</h1>
+          <p className="text-[#64748B] text-sm mt-1">Plateforme de gestion pour centres de soutien scolaire</p>
         </div>
 
         {/* Card */}
-        <div className="card shadow-2xl border-white/10">
+        <div className="card shadow-lg border border-[#E2E8F0] bg-white">
           {error && (
-            <div className="mb-5 flex items-start gap-2.5 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-red-400 text-sm">
-              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            <div className="mb-5 flex items-start gap-2.5 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-red-600 text-sm">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-red-500" />
               <span>{error}</span>
             </div>
           )}
@@ -80,7 +79,7 @@ export default function LoginPage() {
             <div>
               <label className="label" htmlFor="email">Adresse e-mail</label>
               <div className="relative">
-                <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+                <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B] pointer-events-none" />
                 <input
                   id="email"
                   type="email"
@@ -99,7 +98,7 @@ export default function LoginPage() {
                 <label className="label mb-0" htmlFor="password">Mot de passe</label>
               </div>
               <div className="relative">
-                <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+                <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B] pointer-events-none" />
                 <input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
@@ -113,7 +112,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(v => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#1E293B] transition-colors"
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -132,16 +131,16 @@ export default function LoginPage() {
           </form>
 
           {/* Quick Demo Pre-fills */}
-          <div className="mt-6 pt-5 border-t border-white/5">
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-3">
-              <Sparkles className="w-3.5 h-3.5 text-primary-400" />
+          <div className="mt-6 pt-5 border-t border-[#E2E8F0]">
+            <div className="flex items-center gap-1.5 text-xs text-[#64748B] mb-3">
+              <Sparkles className="w-3.5 h-3.5 text-[#2563EB]" />
               <span className="font-medium">Comptes de test (Centre El-Feth) :</span>
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <button
                 type="button"
                 onClick={() => setQuickAccount('directeur@aymnedu.dz', 'admin1234')}
-                className="px-2.5 py-1.5 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 text-violet-300 border border-violet-500/20 text-left transition-colors flex items-center gap-1.5"
+                className="px-2.5 py-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-[#2563EB] border border-blue-200 text-left transition-colors flex items-center gap-1.5 font-medium shadow-xs"
               >
                 <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" />
                 <span className="truncate">Directeur</span>
@@ -149,7 +148,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setQuickAccount('enseignant@aymnedu.dz', 'enseignant1234')}
-                className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 text-left transition-colors flex items-center gap-1.5"
+                className="px-2.5 py-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#10B981] border border-emerald-200 text-left transition-colors flex items-center gap-1.5 font-medium shadow-xs"
               >
                 <BookOpenCheck className="w-3.5 h-3.5 flex-shrink-0" />
                 <span className="truncate">Enseignant</span>
@@ -158,9 +157,9 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <p className="text-center text-sm text-slate-400 mt-6">
+        <p className="text-center text-sm text-[#64748B] mt-6">
           Vous êtes directeur d'un nouveau centre ?{' '}
-          <Link to="/register" className="text-primary-400 hover:text-primary-300 font-semibold underline underline-offset-4">
+          <Link to="/register" className="text-[#2563EB] hover:text-blue-700 font-semibold underline underline-offset-4">
             Créer un centre (14 jours gratuits)
           </Link>
         </p>

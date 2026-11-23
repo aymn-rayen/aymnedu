@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import Optional, List
 
 from app.core.database import get_db
 from app.api.routes.auth import require_role
 from app.models import Utilisateur, RoleEnum
-from app.schemas.eleve import EleveCreate, EleveUpdate, EleveOut
+from app.schemas.eleve import EleveCreate, EleveUpdate, EleveOut, EleveQuickSummary
 from app.services import eleve_service
 
 router = APIRouter(prefix="/eleves", tags=["élèves"])
@@ -24,6 +24,19 @@ def list_eleves(
     user: Utilisateur = Depends(require_role(ROLE_DIR, ROLE_SEC, ROLE_ENS))
 ):
     return eleve_service.list_eleves(db, user.centre_id, q=q, page=page, size=size)
+
+
+@router.get("/quick-search", response_model=List[EleveQuickSummary])
+def quick_search_eleves(
+    q: str,
+    db: Session = Depends(get_db),
+    user: Utilisateur = Depends(require_role(ROLE_DIR, ROLE_SEC, ROLE_ENS))
+):
+    """
+    Killer Feature / Fast Cashier Search (Ctrl + K):
+    Returns student card info with class/level, assigned groups, and unpaid dues.
+    """
+    return eleve_service.quick_search_cashier(db, user.centre_id, q=q)
 
 
 @router.get("/search", response_model=list[EleveOut])

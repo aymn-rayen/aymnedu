@@ -44,45 +44,45 @@ export default function RegisterCenterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] flex items-center justify-center p-6">
+    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6 text-[#1E293B]">
       {/* Background glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-3xl" />
       </div>
 
       <div className="relative w-full max-w-lg">
         {/* Logo */}
         <div className="text-center mb-6">
           <Link to="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary-500/10 border border-primary-500/20">
-              <GraduationCap className="w-6 h-6 text-primary-400" />
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 shadow-sm">
+              <GraduationCap className="w-6 h-6 text-[#2563EB]" />
             </div>
-            <span className="font-heading text-2xl font-bold text-white">
-              Aymn<span className="text-primary-400">EDU</span>
+            <span className="font-heading text-2xl font-bold text-[#1E293B]">
+              Aymn<span className="text-[#2563EB]">EDU</span>
             </span>
           </Link>
-          <h1 className="text-2xl font-bold text-white">Créer mon centre d'étude</h1>
-          <p className="text-slate-400 text-sm mt-1">Numérisez la gestion de vos cours de soutien en quelques minutes</p>
+          <h1 className="text-2xl font-bold text-[#1E293B]">Créer mon centre d'étude</h1>
+          <p className="text-[#64748B] text-sm mt-1">Numérisez la gestion de vos cours de soutien en quelques minutes</p>
         </div>
 
         {/* Card */}
-        <div className="card">
+        <div className="card shadow-lg border border-[#E2E8F0] bg-white">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {error && (
-              <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-red-400 text-sm">
-                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-red-600 text-sm">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-500" />
                 {error}
               </div>
             )}
 
-            <div className="border-b border-white/5 pb-4 mb-4">
-              <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Informations du Centre</h2>
+            <div className="border-b border-[#E2E8F0] pb-4 mb-4">
+              <h2 className="text-sm font-semibold text-[#64748B] uppercase tracking-wider mb-3">Informations du Centre</h2>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="label" htmlFor="nom_centre">Nom du centre *</label>
                   <div className="relative">
-                    <Building2 className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+                    <Building2 className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B] pointer-events-none" />
                     <input
                       id="nom_centre"
                       type="text"
@@ -92,14 +92,14 @@ export default function RegisterCenterPage() {
                     />
                   </div>
                   {errors.nom_centre && (
-                    <p className="text-xs text-red-400 mt-1">{errors.nom_centre.message}</p>
+                    <p className="text-xs text-red-500 mt-1">{errors.nom_centre.message}</p>
                   )}
                 </div>
 
                 <div>
                   <label className="label" htmlFor="wilaya">Wilaya *</label>
                   <div className="relative">
-                    <MapPin className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+                    <MapPin className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B] pointer-events-none" />
                     <input
                       id="wilaya"
                       type="text"
@@ -109,7 +109,7 @@ export default function RegisterCenterPage() {
                     />
                   </div>
                   {errors.wilaya && (
-                    <p className="text-xs text-red-400 mt-1">{errors.wilaya.message}</p>
+                    <p className="text-xs text-red-500 mt-1">{errors.wilaya.message}</p>
                   )}
                 </div>
               </div>
@@ -117,7 +117,7 @@ export default function RegisterCenterPage() {
               <div className="mt-3">
                 <label className="label" htmlFor="telephone">Téléphone du Centre (Optionnel)</label>
                 <div className="relative">
-                  <Phone className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+                  <Phone className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B] pointer-events-none" />
                   <input
                     id="telephone"
                     type="tel"
@@ -127,19 +127,19 @@ export default function RegisterCenterPage() {
                   />
                 </div>
                 {errors.telephone && (
-                  <p className="text-xs text-red-400 mt-1">{errors.telephone.message}</p>
+                  <p className="text-xs text-red-500 mt-1">{errors.telephone.message}</p>
                 )}
               </div>
             </div>
 
             <div>
-              <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Compte Directeur (Administrateur)</h2>
+              <h2 className="text-sm font-semibold text-[#64748B] uppercase tracking-wider mb-3">Compte Directeur (Administrateur)</h2>
               
               <div className="space-y-4">
                 <div>
                   <label className="label" htmlFor="full_name">Nom et Prénom *</label>
                   <div className="relative">
-                    <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+                    <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B] pointer-events-none" />
                     <input
                       id="full_name"
                       type="text"
@@ -149,14 +149,14 @@ export default function RegisterCenterPage() {
                     />
                   </div>
                   {errors.full_name && (
-                    <p className="text-xs text-red-400 mt-1">{errors.full_name.message}</p>
+                    <p className="text-xs text-red-500 mt-1">{errors.full_name.message}</p>
                   )}
                 </div>
 
                 <div>
                   <label className="label" htmlFor="email">Email professionnel *</label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+                    <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B] pointer-events-none" />
                     <input
                       id="email"
                       type="email"
@@ -166,14 +166,14 @@ export default function RegisterCenterPage() {
                     />
                   </div>
                   {errors.email && (
-                    <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>
+                    <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
                   )}
                 </div>
 
                 <div>
                   <label className="label" htmlFor="password">Mot de passe de connexion *</label>
                   <div className="relative">
-                    <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+                    <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B] pointer-events-none" />
                     <input
                       id="password"
                       type="password"
@@ -183,7 +183,7 @@ export default function RegisterCenterPage() {
                     />
                   </div>
                   {errors.password && (
-                    <p className="text-xs text-red-400 mt-1">{errors.password.message}</p>
+                    <p className="text-xs text-red-500 mt-1">{errors.password.message}</p>
                   )}
                 </div>
               </div>
@@ -202,10 +202,10 @@ export default function RegisterCenterPage() {
           </form>
         </div>
 
-        <p className="text-center text-sm text-slate-400 mt-6">
+        <p className="text-center text-sm text-[#64748B] mt-6">
           Déjà inscrit ?{' '}
-          <Link to="/app/login" className="text-primary-400 hover:text-primary-300 font-semibold underline underline-offset-4">
-            Connectez-vous à votre espace centré
+          <Link to="/app/login" className="text-[#2563EB] hover:text-blue-700 font-semibold underline underline-offset-4">
+            Connectez-vous à votre espace centre
           </Link>
         </p>
       </div>

@@ -16,8 +16,8 @@
 
   body {
     font-family: 'Inter', sans-serif;
-    background-color: #0b0f19;
-    color: #f8fafc;
+    background-color: #f8fafc; /* Background */
+    color: #1e293b;            /* Dark Slate */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -26,68 +26,78 @@
     font-family: 'Outfit', sans-serif;
     letter-spacing: -0.02em;
     line-height: 1.25;
+    color: #1e293b;
   }
 }
 
 @layer components {
+  /* Surface Cards */
   .card {
-    @apply bg-[#131a2e] border border-white/10 rounded-2xl p-6;
+    @apply bg-white border border-[#e2e8f0] rounded-2xl p-6 shadow-sm;
   }
 
+  /* Primary Blue Button */
   .btn-primary {
-    @apply bg-primary-500 hover:bg-primary-600 text-white font-semibold px-5 py-2.5 rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary-500/25;
+    @apply bg-[#2563eb] hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-500/20 active:translate-y-0;
   }
 
+  /* Light Secondary Button */
   .btn-secondary {
-    @apply bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium px-5 py-2.5 rounded-lg transition-all duration-200;
+    @apply bg-white hover:bg-slate-50 border border-[#e2e8f0] text-slate-700 font-medium px-5 py-2.5 rounded-lg transition-all duration-200 shadow-sm;
   }
 
+  /* Danger Button */
   .btn-danger {
-    @apply bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 font-medium px-5 py-2.5 rounded-lg transition-all duration-200;
+    @apply bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 font-medium px-5 py-2.5 rounded-lg transition-all duration-200;
   }
 
+  /* Clean Input with Slate border and Dark text */
   .input {
-    @apply w-full bg-[#1b2542] border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/30 transition-all duration-200;
+    @apply w-full bg-white border border-[#cbd5e1] rounded-lg px-4 py-2.5 text-sm text-[#1e293b] placeholder-slate-400 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 shadow-sm;
   }
 
+  /* Labels */
   .label {
-    @apply block text-sm font-semibold text-slate-300 mb-1.5;
+    @apply block text-sm font-semibold text-[#1e293b] mb-1.5;
   }
 
+  /* Badges using Emerald for success */
   .badge-success {
-    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-primary-500/10 text-primary-400 border border-primary-500/20;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-[#10b981] border border-emerald-200;
   }
 
   .badge-warning {
-    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200;
   }
 
   .badge-danger {
-    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-500/10 text-red-400 border border-red-500/20;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-50 text-red-600 border border-red-200;
   }
 
   .badge-info {
-    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-[#2563eb] border border-blue-200;
   }
 
+  /* Sidebar Navigation */
   .sidebar-link {
-    @apply flex items-center gap-3 px-4 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-200 font-medium text-sm;
+    @apply flex items-center gap-3 px-4 py-2.5 rounded-xl text-[#64748b] hover:text-[#2563eb] hover:bg-blue-50/60 transition-all duration-200 font-medium text-sm;
   }
 
   .sidebar-link.active {
-    @apply text-white bg-primary-500/10 border border-primary-500/20 text-primary-400;
+    @apply text-[#2563eb] bg-blue-50 font-semibold border border-blue-100 shadow-sm;
   }
 
+  /* Table styling */
   .table-header {
-    @apply text-xs font-semibold uppercase tracking-wider text-slate-500 px-4 py-3 text-left;
+    @apply text-xs font-semibold uppercase tracking-wider text-[#64748b] px-4 py-3 text-left bg-slate-50 border-b border-[#e2e8f0];
   }
 
   .table-cell {
-    @apply px-4 py-3.5 text-sm text-slate-300 whitespace-nowrap;
+    @apply px-4 py-3.5 text-sm text-[#334155] whitespace-nowrap;
   }
 
   .table-row {
-    @apply border-t border-white/5 hover:bg-white/5 transition-colors duration-150;
+    @apply border-b border-[#e2e8f0] hover:bg-slate-50/80 transition-colors duration-150;
   }
 }
 
@@ -100,11 +110,11 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(100, 116, 139, 0.25);
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(100, 116, 139, 0.4);
 }
 
 /* Animations */
@@ -148,33 +158,6 @@
     print-color-adjust: exact !important;
   }
 
-  /* Hide all app chrome */
-  body * {
-    visibility: hidden;
-  }
-
-  /* Make only the printable receipt visible */
-  #printable-receipt,
-  #printable-receipt * {
-    visibility: visible;
-  }
-
-  #printable-receipt {
-    position: fixed !important;
-    left: 0 !important;
-    top: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    max-width: 135mm !important;
-    margin: 0 auto !important;
-    padding: 16px 20px !important;
-    background: #ffffff !important;
-    color: #0f172a !important;
-    border: 2px solid #0f172a !important;
-    border-radius: 8px !important;
-    box-shadow: none !important;
-  }
-
   .no-print {
     display: none !important;
   }
@@ -183,47 +166,21 @@
     display: block !important;
   }
 
-  .receipt-header-print {
-    border-bottom: 2px solid #0f172a !important;
-    padding-bottom: 10px !important;
-    margin-bottom: 12px !important;
+  body * {
+    visibility: hidden;
   }
 
-  .receipt-title-print {
-    color: #0f172a !important;
-    font-size: 15pt !important;
-    font-weight: 800 !important;
+  #printable-receipt,
+  #printable-receipt * {
+    visibility: visible;
   }
 
-  .receipt-row-print {
-    border-bottom: 1px dashed #cbd5e1 !important;
-    color: #475569 !important;
-    padding: 6px 0 !important;
-  }
-
-  .receipt-row-print span.value {
-    color: #0f172a !important;
-    font-weight: 600 !important;
-  }
-
-  .receipt-total-print {
-    background: #f8fafc !important;
-    border: 2px solid #0f172a !important;
-    color: #0f172a !important;
-    padding: 10px !important;
-    margin-top: 12px !important;
-    border-radius: 6px !important;
-  }
-
-  .receipt-total-print span {
-    color: #0f172a !important;
-  }
-
-  .receipt-stamp-print {
-    display: flex !important;
-    justify-content: space-between !important;
-    margin-top: 24px !important;
-    padding-top: 12px !important;
-    border-top: 1px solid #e2e8f0 !important;
+  #printable-receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
   }
 }

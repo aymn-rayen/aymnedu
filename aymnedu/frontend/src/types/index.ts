@@ -94,6 +94,37 @@ export interface CreateEleveRequest {
   niveau: string
 }
 
+// ===== Quick Cashier (Ctrl + K) =====
+export interface EleveGroupeSummary {
+  id: number
+  nom: string
+  matiere?: string
+  niveau?: string
+}
+
+export interface EleveUnpaidPaiement {
+  id: number
+  groupe_id: number
+  groupe_nom: string
+  mois: string
+  montant: number
+  montant_verse: number
+  reste: number
+  statut: 'impaye' | 'partiel' | string
+}
+
+export interface EleveQuickSummary {
+  id: number
+  prenom: string
+  nom: string
+  niveau?: string
+  telephone_responsable?: string
+  statut: string
+  groupes: EleveGroupeSummary[]
+  total_reste_du: number
+  impayes: EleveUnpaidPaiement[]
+}
+
 // ===== Groupe =====
 export interface Groupe {
   id: number

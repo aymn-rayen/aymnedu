@@ -129,12 +129,12 @@ export default function SuperAdminPage() {
   if (!isAdminLoggedIn) {
     return (
       <div className="min-h-screen bg-[#070b14] flex items-center justify-center p-6 text-slate-100">
-        <div className="relative w-full max-w-md bg-[#0f172a] border border-amber-500/30 rounded-2xl p-8 shadow-2xl">
+        <div className="relative w-full max-w-md bg-white border border-amber-500/30 rounded-2xl p-8 shadow-2xl">
           <div className="text-center mb-6">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 mb-4">
               <ShieldAlert className="w-8 h-8" />
             </div>
-            <h1 className="font-heading text-2xl font-bold text-white">Espace Super-Admin</h1>
+            <h1 className="font-heading text-2xl font-bold text-[#1E293B]">Espace Super-Admin</h1>
             <p className="text-xs text-amber-400/80 font-medium mt-1">Accès réservé à l'éditeur AymnEDU</p>
           </div>
 
@@ -153,7 +153,7 @@ export default function SuperAdminPage() {
                 <input
                   type="email"
                   required
-                  className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 pl-10 text-sm text-white focus:outline-none focus:border-amber-500/50"
+                  className="w-full bg-slate-900 border border-[#E2E8F0] rounded-xl px-4 py-2.5 pl-10 text-sm text-[#1E293B] focus:outline-none focus:border-amber-500/50"
                   value={adminEmail}
                   onChange={(e) => setAdminEmail(e.target.value)}
                 />
@@ -167,7 +167,7 @@ export default function SuperAdminPage() {
                 <input
                   type="password"
                   required
-                  className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 pl-10 text-sm text-white font-mono focus:outline-none focus:border-amber-500/50"
+                  className="w-full bg-slate-900 border border-[#E2E8F0] rounded-xl px-4 py-2.5 pl-10 text-sm text-[#1E293B] font-mono focus:outline-none focus:border-amber-500/50"
                   value={adminPassword}
                   onChange={(e) => setAdminPassword(e.target.value)}
                 />
@@ -183,7 +183,7 @@ export default function SuperAdminPage() {
             </button>
           </form>
 
-          <div className="mt-6 pt-4 border-t border-white/5 text-center">
+          <div className="mt-6 pt-4 border-t border-[#E2E8F0] text-center">
             <span className="text-[11px] text-slate-500">
               Identifiants par défaut : <code className="text-slate-400">admin@aymnedu.dz / admin123456</code>
             </span>
@@ -198,21 +198,21 @@ export default function SuperAdminPage() {
     <div className="min-h-screen bg-[#070b14] text-slate-100 p-6 md:p-8">
       {/* Toast Notification */}
       {actionSuccess && (
-        <div className="fixed top-5 right-5 z-50 bg-emerald-500/90 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 border border-emerald-400/30 animate-fade-in">
+        <div className="fixed top-5 right-5 z-50 bg-emerald-500/90 text-[#1E293B] text-xs font-semibold px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 border border-emerald-400/30 animate-fade-in">
           <CheckCircle2 className="w-4 h-4" />
           <span>{actionSuccess}</span>
         </div>
       )}
 
       {/* Header bar */}
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[#E2E8F0]">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
             <ShieldAlert className="w-6 h-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-white">AymnEDU Control Center</h1>
+              <h1 className="text-xl font-bold text-[#1E293B]">AymnEDU Control Center</h1>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
                 SUPER-ADMIN
               </span>
@@ -229,7 +229,7 @@ export default function SuperAdminPage() {
               refetchVouchers()
               showNotification('Données actualisées !')
             }}
-            className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10 flex items-center gap-1.5 transition-colors"
+            className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-[#E2E8F0] flex items-center gap-1.5 transition-colors"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             Actualiser
@@ -247,9 +247,9 @@ export default function SuperAdminPage() {
       <div className="max-w-7xl mx-auto space-y-6 pt-6">
         {/* KPI Metrics Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-white/5">
+          <div className="p-4 rounded-xl bg-slate-900/60 border border-[#E2E8F0]">
             <span className="text-[11px] text-slate-400 block font-medium">Total Écoles</span>
-            <span className="text-2xl font-bold text-white mt-1 block">
+            <span className="text-2xl font-bold text-[#1E293B] mt-1 block">
               {statsLoading ? '—' : stats?.total_centres ?? 0}
             </span>
           </div>
@@ -284,20 +284,20 @@ export default function SuperAdminPage() {
 
           <div className="p-4 rounded-xl bg-gradient-to-br from-indigo-950/60 to-slate-900 border border-indigo-500/30">
             <span className="text-[11px] text-indigo-300 block font-medium">MRR Estimé</span>
-            <span className="text-xl font-extrabold text-white mt-1 block">
+            <span className="text-xl font-extrabold text-[#1E293B] mt-1 block">
               {statsLoading ? '—' : `${(stats?.mrr_estime_dzd ?? 0).toLocaleString('fr-DZ')} DA`}
             </span>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 border-b border-white/10 pb-3">
+        <div className="flex items-center gap-2 border-b border-[#E2E8F0] pb-3">
           <button
             onClick={() => setActiveTab('centres')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-colors ${
               activeTab === 'centres'
                 ? 'bg-primary-500/20 text-primary-300 border border-primary-500/40'
-                : 'text-slate-400 hover:text-white hover:bg-white/5'
+                : 'text-slate-400 hover:text-[#1E293B] hover:bg-slate-50'
             }`}
           >
             <Building2 className="w-4 h-4" />
@@ -308,7 +308,7 @@ export default function SuperAdminPage() {
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-colors ${
               activeTab === 'vouchers'
                 ? 'bg-primary-500/20 text-primary-300 border border-primary-500/40'
-                : 'text-slate-400 hover:text-white hover:bg-white/5'
+                : 'text-slate-400 hover:text-[#1E293B] hover:bg-slate-50'
             }`}
           >
             <Ticket className="w-4 h-4" />
@@ -327,7 +327,7 @@ export default function SuperAdminPage() {
                   placeholder="Rechercher par nom d'école ou wilaya…"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2 pl-9 text-xs text-white focus:outline-none focus:border-primary-500/50"
+                  className="w-full bg-slate-900 border border-[#E2E8F0] rounded-xl px-4 py-2 pl-9 text-xs text-[#1E293B] focus:outline-none focus:border-primary-500/50"
                 />
               </div>
               <span className="text-xs text-slate-500">
@@ -335,9 +335,9 @@ export default function SuperAdminPage() {
               </span>
             </div>
 
-            <div className="overflow-x-auto rounded-2xl border border-white/10 bg-slate-900/60 shadow-xl">
+            <div className="overflow-x-auto rounded-2xl border border-[#E2E8F0] bg-slate-900/60 shadow-xl">
               <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950/70 text-[11px] uppercase tracking-wider text-slate-400 border-b border-white/10">
+                <thead className="bg-slate-950/70 text-[11px] uppercase tracking-wider text-slate-400 border-b border-[#E2E8F0]">
                   <tr>
                     <th className="px-4 py-3.5">Centre & Localisation</th>
                     <th className="px-4 py-3.5">Contact</th>
@@ -368,7 +368,7 @@ export default function SuperAdminPage() {
                       return (
                         <tr key={centre.id} className="hover:bg-white/[0.02] transition-colors">
                           <td className="px-4 py-3.5">
-                            <span className="font-bold text-white block text-sm">{centre.nom}</span>
+                            <span className="font-bold text-[#1E293B] block text-sm">{centre.nom}</span>
                             <span className="text-[11px] text-slate-400">
                               Wilaya : {centre.wilaya || 'Non spécifiée'} • ID #{centre.id}
                             </span>
@@ -377,7 +377,7 @@ export default function SuperAdminPage() {
                             {centre.telephone || '—'}
                           </td>
                           <td className="px-4 py-3.5">
-                            <span className="font-semibold text-white">{centre.total_eleves}</span>
+                            <span className="font-semibold text-[#1E293B]">{centre.total_eleves}</span>
                             <span className="text-[11px] text-slate-500"> / {centre.max_eleves}</span>
                           </td>
                           <td className="px-4 py-3.5">
@@ -455,10 +455,10 @@ export default function SuperAdminPage() {
         {activeTab === 'vouchers' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Voucher Generator Form */}
-            <div className="bg-slate-900/60 border border-white/10 rounded-2xl p-5 shadow-xl space-y-4">
-              <div className="flex items-center gap-2 pb-3 border-b border-white/5">
+            <div className="bg-slate-900/60 border border-[#E2E8F0] rounded-2xl p-5 shadow-xl space-y-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-[#E2E8F0]">
                 <Ticket className="w-5 h-5 text-primary-400" />
-                <h3 className="font-bold text-white text-sm">Générer un Coupon de Licence</h3>
+                <h3 className="font-bold text-[#1E293B] text-sm">Générer un Coupon de Licence</h3>
               </div>
 
               <div>
@@ -471,7 +471,7 @@ export default function SuperAdminPage() {
                     setVoucherPlan('pro')
                     setVoucherMaxEleves(days >= 300 ? 2000 : 500)
                   }}
-                  className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                  className="w-full bg-slate-950 border border-[#E2E8F0] rounded-xl px-3 py-2 text-xs text-[#1E293B] focus:outline-none"
                 >
                   <option value={30}>Soutien Pro — 1 Mois (30 jours, 500 élèves)</option>
                   <option value={90}>Soutien Pro — 3 Mois (90 jours, 500 élèves)</option>
@@ -487,7 +487,7 @@ export default function SuperAdminPage() {
                   max={20}
                   value={voucherCount}
                   onChange={(e) => setVoucherCount(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                  className="w-full bg-slate-950 border border-[#E2E8F0] rounded-xl px-3 py-2 text-xs text-[#1E293B] focus:outline-none"
                 />
               </div>
 
@@ -500,7 +500,7 @@ export default function SuperAdminPage() {
                   placeholder="Ex : Virement BaridiMob École En-Nadjah #45821"
                   value={voucherNote}
                   onChange={(e) => setVoucherNote(e.target.value)}
-                  className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                  className="w-full bg-slate-950 border border-[#E2E8F0] rounded-xl px-3 py-2 text-xs text-[#1E293B] focus:outline-none"
                 />
               </div>
 
@@ -508,7 +508,7 @@ export default function SuperAdminPage() {
                 type="button"
                 onClick={() => createVouchersMutation.mutate()}
                 disabled={createVouchersMutation.isPending}
-                className="w-full py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-primary-500 to-indigo-500 text-white hover:brightness-110 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-primary-500 to-indigo-500 text-[#1E293B] hover:brightness-110 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 <PlusCircle className="w-4 h-4" />
                 {createVouchersMutation.isPending ? 'Génération…' : 'Créer les Coupons à Usage Unique'}
@@ -516,11 +516,11 @@ export default function SuperAdminPage() {
             </div>
 
             {/* List of generated vouchers */}
-            <div className="lg:col-span-2 bg-slate-900/60 border border-white/10 rounded-2xl p-5 shadow-xl space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-white/5">
+            <div className="lg:col-span-2 bg-slate-900/60 border border-[#E2E8F0] rounded-2xl p-5 shadow-xl space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[#E2E8F0]">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-amber-400" />
-                  <h3 className="font-bold text-white text-sm">Registre des Coupons Disponibles & Utilisés</h3>
+                  <h3 className="font-bold text-[#1E293B] text-sm">Registre des Coupons Disponibles & Utilisés</h3>
                 </div>
                 <span className="text-xs text-slate-500">{vouchers.length} coupon(s)</span>
               </div>
@@ -538,13 +538,13 @@ export default function SuperAdminPage() {
                       key={voucher.id}
                       className={`p-3.5 rounded-xl border flex items-center justify-between gap-3 transition-colors ${
                         voucher.is_redeemed
-                          ? 'bg-slate-950/40 border-white/5 opacity-60'
+                          ? 'bg-slate-950/40 border-[#E2E8F0] opacity-60'
                           : 'bg-slate-950/80 border-emerald-500/30'
                       }`}
                     >
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-sm font-bold text-white select-all">
+                          <span className="font-mono text-sm font-bold text-[#1E293B] select-all">
                             {voucher.code}
                           </span>
                           {voucher.is_redeemed ? (
@@ -560,7 +560,7 @@ export default function SuperAdminPage() {
                         <p className="text-[11px] text-slate-400 mt-1">
                           {voucher.is_redeemed ? (
                             <span>
-                              Utilisé par : <strong className="text-white">{voucher.redeemed_by_centre_nom || `Centre #${voucher.redeemed_by_centre_id}`}</strong> le{' '}
+                              Utilisé par : <strong className="text-[#1E293B]">{voucher.redeemed_by_centre_nom || `Centre #${voucher.redeemed_by_centre_id}`}</strong> le{' '}
                               {voucher.redeemed_at ? new Date(voucher.redeemed_at).toLocaleDateString('fr-DZ') : ''}
                             </span>
                           ) : (
@@ -576,7 +576,7 @@ export default function SuperAdminPage() {
                         <button
                           type="button"
                           onClick={() => copyToClipboard(voucher.code)}
-                          className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 flex items-center gap-1.5 transition-colors"
+                          className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-50 hover:bg-white/10 text-slate-300 hover:text-[#1E293B] border border-[#E2E8F0] flex items-center gap-1.5 transition-colors"
                           title="Copier le code pour l'envoyer au client (WhatsApp/Email)"
                         >
                           {copiedCode === voucher.code ? (

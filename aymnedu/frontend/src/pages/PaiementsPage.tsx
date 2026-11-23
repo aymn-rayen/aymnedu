@@ -163,7 +163,7 @@ export default function PaiementsPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="font-heading text-2xl font-bold text-white">Gestion des Paiements</h1>
+          <h1 className="font-heading text-2xl font-bold text-[#1E293B]">Gestion des Paiements</h1>
           <p className="text-slate-400 text-sm mt-1">
             Suivi des mensualités et encaissements —{' '}
             {filterMois > 0 ? MOIS_LABELS[filterMois - 1] : 'Tous les mois'}
@@ -226,7 +226,7 @@ export default function PaiementsPage() {
       <div className="card p-0 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-white/2">
+            <thead className="bg-slate-50">
               <tr>
                 <th className="table-header">Élève</th>
                 <th className="table-header">Groupe</th>
@@ -251,10 +251,10 @@ export default function PaiementsPage() {
 
                 return (
                   <tr key={p.id} className="table-row">
-                    <td className="table-cell font-medium text-white">{p.eleve_nom}</td>
+                    <td className="table-cell font-medium text-[#1E293B]">{p.eleve_nom}</td>
                     <td className="table-cell text-slate-400 text-xs max-w-[170px] truncate">{p.groupe_nom}</td>
                     <td className="table-cell font-mono text-xs text-slate-400">{p.mois}</td>
-                    <td className="table-cell font-mono text-xs font-semibold text-white text-right">
+                    <td className="table-cell font-mono text-xs font-semibold text-[#1E293B] text-right">
                       {total.toLocaleString('fr-DZ')} DA
                     </td>
                     <td className="table-cell font-mono text-xs text-emerald-400 text-right font-medium">
@@ -290,7 +290,7 @@ export default function PaiementsPage() {
                         {(p.statut === 'paye' || (p.statut === 'partiel' && verse > 0)) && (
                           <button
                             onClick={() => setSelectedReceipt(p)}
-                            className="text-xs btn-secondary py-1.5 px-2.5 flex items-center gap-1.5 text-slate-300 hover:text-white"
+                            className="text-xs btn-secondary py-1.5 px-2.5 flex items-center gap-1.5 text-slate-300 hover:text-[#1E293B]"
                             title="Voir et imprimer le reçu"
                           >
                             <Receipt className="w-3.5 h-3.5 text-primary-400" />
@@ -308,7 +308,7 @@ export default function PaiementsPage() {
 
         {/* Pagination */}
         {data && data.pages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-white/5 bg-white/2">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-[#E2E8F0] bg-slate-50">
             <span className="text-xs text-slate-400">
               Page {data.page} sur {data.pages} ({data.total} paiement{data.total > 1 ? 's' : ''})
             </span>
@@ -335,16 +335,16 @@ export default function PaiementsPage() {
       {/* ── Modal Versement Partiel / Total ────────────────────────────────── */}
       {versementTarget && createPortal(
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm"
           onClick={() => setVersementTarget(null)}
         >
           <div
-            className="card w-full max-w-md bg-[#0f172a] border border-primary-500/40 shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto"
+            className="card w-full max-w-md bg-white border border-[#E2E8F0] shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}
           >
             <button
               onClick={() => setVersementTarget(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+              className="absolute top-4 right-4 text-slate-400 hover:text-[#1E293B] p-1 rounded-lg hover:bg-white/10 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -354,7 +354,7 @@ export default function PaiementsPage() {
                 <Coins className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="font-heading text-lg font-bold text-white">
+                <h2 className="font-heading text-lg font-bold text-[#1E293B]">
                   {versementTarget.statut === 'partiel' ? 'Compléter le versement' : 'Encaisser le paiement'}
                 </h2>
                 <p className="text-xs text-slate-400">Mois : {versementTarget.mois}</p>
@@ -362,18 +362,18 @@ export default function PaiementsPage() {
             </div>
 
             {/* Infos élève / groupe */}
-            <div className="p-3.5 rounded-xl bg-white/5 border border-white/5 space-y-2 text-sm mb-4">
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-[#E2E8F0] space-y-2 text-sm mb-4">
               <div className="flex justify-between">
                 <span className="text-slate-400">Élève :</span>
-                <span className="font-semibold text-white">{versementTarget.eleve_nom}</span>
+                <span className="font-semibold text-[#1E293B]">{versementTarget.eleve_nom}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-400">Groupe :</span>
                 <span className="text-slate-300">{versementTarget.groupe_nom}</span>
               </div>
-              <div className="border-t border-white/10 pt-2 flex justify-between">
+              <div className="border-t border-[#E2E8F0] pt-2 flex justify-between">
                 <span className="text-slate-400">Total dû :</span>
-                <span className="font-mono font-semibold text-white">
+                <span className="font-mono font-semibold text-[#1E293B]">
                   {Number(versementTarget.montant).toLocaleString('fr-DZ')} DA
                 </span>
               </div>
@@ -423,7 +423,7 @@ export default function PaiementsPage() {
                       <button
                         type="button"
                         onClick={() => setVersementMontant(String(Math.floor(reste / 2)))}
-                        className="text-xs px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition-colors"
+                        className="text-xs px-2.5 py-1 rounded-md bg-slate-50 hover:bg-white/10 text-slate-300 border border-[#E2E8F0] transition-colors"
                       >
                         Acompte 50% ({Math.floor(reste / 2).toLocaleString('fr-DZ')} DA)
                       </button>
@@ -445,7 +445,7 @@ export default function PaiementsPage() {
               )}
             </div>
 
-            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/5">
+            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-[#E2E8F0]">
               <button
                 type="button"
                 onClick={() => setVersementTarget(null)}
@@ -470,21 +470,21 @@ export default function PaiementsPage() {
       {/* ── Modal Nouveau Paiement ─────────────────────────────────────────── */}
       {showNewForm && createPortal(
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm"
           onClick={() => setShowNewForm(false)}
         >
           <div
-            className="card w-full max-w-md bg-[#0f172a] border border-primary-500/40 shadow-2xl p-6 relative"
+            className="card w-full max-w-md bg-white border border-[#E2E8F0] shadow-2xl p-6 relative"
             onClick={e => e.stopPropagation()}
           >
             <button
               onClick={() => setShowNewForm(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+              className="absolute top-4 right-4 text-slate-400 hover:text-[#1E293B] p-1 rounded-lg hover:bg-white/10 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <h2 className="font-heading text-lg font-bold text-white mb-5">Nouveau Paiement</h2>
+            <h2 className="font-heading text-lg font-bold text-[#1E293B] mb-5">Nouveau Paiement</h2>
 
             <div className="space-y-4">
               {/* Élève */}
@@ -572,7 +572,7 @@ export default function PaiementsPage() {
               )}
             </div>
 
-            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/5">
+            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-[#E2E8F0]">
               <button
                 type="button"
                 onClick={() => setShowNewForm(false)}
@@ -597,24 +597,24 @@ export default function PaiementsPage() {
       {/* ── Modal Reçu de Paiement ─────────────────────────────────────────── */}
       {selectedReceipt && createPortal(
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fadeIn"
           onClick={() => setSelectedReceipt(null)}
         >
           <div
             id="printable-receipt"
-            className="card w-full max-w-md bg-[#0f172a] border border-primary-500/40 shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto"
+            className="card w-full max-w-md bg-white border border-[#E2E8F0] shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}
           >
             <button
               onClick={() => setSelectedReceipt(null)}
-              className="no-print absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+              className="no-print absolute top-4 right-4 text-slate-400 hover:text-[#1E293B] p-1 rounded-lg hover:bg-white/10 transition-colors"
               title="Fermer"
             >
               <X className="w-5 h-5" />
             </button>
 
             {/* Header reçu */}
-            <div className="text-center pb-4 border-b border-white/10 receipt-header-print">
+            <div className="text-center pb-4 border-b border-[#E2E8F0] receipt-header-print">
               <div className="print-only text-xs font-semibold uppercase tracking-widest text-slate-500 mb-1">
                 AymnEDU — Centre de Soutien Scolaire
               </div>
@@ -625,7 +625,7 @@ export default function PaiementsPage() {
               }`}>
                 {selectedReceipt.statut === 'paye' ? 'Paiement Validé (Soldé) ✓' : 'Acompte / Versement Partiel ⏳'}
               </span>
-              <h2 className="font-heading text-xl font-bold text-white receipt-title-print">
+              <h2 className="font-heading text-xl font-bold text-[#1E293B] receipt-title-print">
                 {selectedReceipt.statut === 'paye' ? 'Reçu d\'encaissement' : 'Reçu d\'acompte'}
               </h2>
               <p className="text-xs text-primary-400 font-mono mt-1">
@@ -647,13 +647,13 @@ export default function PaiementsPage() {
                     : "Aujourd'hui",
                 },
               ].map(({ label, value }) => (
-                <div key={label} className="flex justify-between py-1 border-b border-white/5 receipt-row-print">
+                <div key={label} className="flex justify-between py-1 border-b border-[#E2E8F0] receipt-row-print">
                   <span className="text-slate-400">{label}</span>
-                  <span className="font-semibold text-white value">{value}</span>
+                  <span className="font-semibold text-[#1E293B] value">{value}</span>
                 </div>
               ))}
 
-              <div className="flex justify-between py-1 border-b border-white/5 receipt-row-print">
+              <div className="flex justify-between py-1 border-b border-[#E2E8F0] receipt-row-print">
                 <span className="text-slate-400">Statut :</span>
                 <span className={`font-semibold value ${selectedReceipt.statut === 'paye' ? 'text-emerald-400' : 'text-amber-400'}`}>
                   {selectedReceipt.statut === 'paye' ? 'Réglé en totalité' : 'Versement partiel'}
@@ -662,13 +662,13 @@ export default function PaiementsPage() {
 
               {selectedReceipt.statut === 'partiel' && (
                 <>
-                  <div className="flex justify-between py-1 border-b border-white/5 receipt-row-print">
+                  <div className="flex justify-between py-1 border-b border-[#E2E8F0] receipt-row-print">
                     <span className="text-slate-400">Total dû pour ce mois :</span>
-                    <span className="font-semibold text-white value">
+                    <span className="font-semibold text-[#1E293B] value">
                       {Number(selectedReceipt.montant).toLocaleString('fr-DZ')} DA
                     </span>
                   </div>
-                  <div className="flex justify-between py-1 border-b border-white/5 receipt-row-print">
+                  <div className="flex justify-between py-1 border-b border-[#E2E8F0] receipt-row-print">
                     <span className="text-slate-400">Reste à payer :</span>
                     <span className="font-semibold text-amber-400 value">
                       {Math.max(0, Number(selectedReceipt.montant) - Number(selectedReceipt.montant_verse || 0)).toLocaleString('fr-DZ')} DA
@@ -709,7 +709,7 @@ export default function PaiementsPage() {
             </div>
 
             {/* Boutons action */}
-            <div className="no-print flex flex-wrap gap-2.5 justify-end pt-3 border-t border-white/5 mt-2">
+            <div className="no-print flex flex-wrap gap-2.5 justify-end pt-3 border-t border-[#E2E8F0] mt-2">
               <button
                 type="button"
                 onClick={() => setSelectedReceipt(null)}

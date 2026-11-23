@@ -1,10 +1,10 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 from fastapi import HTTPException
-from typing import Optional
+from typing import Optional, List
 
-from app.models import Eleve
-from app.schemas.eleve import EleveCreate, EleveUpdate
+from app.models import Eleve, Paiement, PaiementStatutEnum, InscriptionGroupe, Groupe
+from app.schemas.eleve import EleveCreate, EleveUpdate, EleveQuickSummary, EleveGroupeSummary, EleveUnpaidPaiement
 
 
 def list_eleves(
@@ -33,7 +33,6 @@ def list_eleves(
     }
 
 
-
 def search_eleves(db: Session, centre_id: int, q: str) -> list[Eleve]:
     """
     Lightweight full-text search for the groupe-management modal.
@@ -52,6 +51,85 @@ def search_eleves(db: Session, centre_id: int, q: str) -> list[Eleve]:
         .limit(50)
         .all()
     )
+
+
+def quick_search_cashier(db: Session, centre_id: int, q: str) -> List[EleveQuickSummary]:
+    """
+    Killer Feature / Fast Cashier Search (Ctrl + K):
+    Returns student card info with class/level, assigned groups, and unpaid dues.
+    """
+    if not q or len(q.strip()) < 2:
+        return []
+
+    like = f"%{q.strip()}%"
+    eleves = (
+        db.query(Eleve)
+        .options(
+            joinedload(Eleve.inscriptions).joinedload(InscriptionGroupe.groupe),
+            joinedload(Eleve.paiements).joinedload(Paiement.groupe)
+        )
+        .filter(
+            Eleve.centre_id == centre_id,
+            Eleve.deleted_at == None,  # noqa: E711
+            (Eleve.prenom.ilike(like)) | (Eleve.nom.ilike(like))
+        )
+        .order_by(Eleve.nom, Eleve.prenom)
+        .limit(20)
+        .all()
+    )
+
+    results: List[EleveQuickSummary] = []
+    for el in eleves:
+        # Groupes
+        groupes_summary = [
+            EleveGroupeSummary(
+                id=ig.groupe.id,
+                nom=ig.groupe.nom,
+                matiere=ig.groupe.matiere,
+                niveau=ig.groupe.niveau
+            )
+            for ig in el.inscriptions
+            if ig.groupe and ig.groupe.deleted_at is None
+        ]
+
+        # Impayés et partiels
+        impayes_list: List[EleveUnpaidPaiement] = []
+        total_reste = 0.0
+
+        for p in el.paiements:
+            if p.statut in (PaiementStatutEnum.impaye, PaiementStatutEnum.partiel, "impaye", "partiel"):
+                m_total = float(p.montant or 0)
+                m_verse = float(p.montant_verse or 0)
+                reste = max(0.0, m_total - m_verse)
+                total_reste += reste
+                impayes_list.append(
+                    EleveUnpaidPaiement(
+                        id=p.id,
+                        groupe_id=p.groupe_id,
+                        groupe_nom=p.groupe.nom if p.groupe else "Groupe",
+                        mois=p.mois,
+                        montant=m_total,
+                        montant_verse=m_verse,
+                        reste=reste,
+                        statut=p.statut.value if hasattr(p.statut, 'value') else str(p.statut)
+                    )
+                )
+
+        results.append(
+            EleveQuickSummary(
+                id=el.id,
+                prenom=el.prenom,
+                nom=el.nom,
+                niveau=el.niveau,
+                telephone_responsable=el.telephone_responsable,
+                statut=el.statut.value if hasattr(el.statut, 'value') else str(el.statut),
+                groupes=groupes_summary,
+                total_reste_du=round(total_reste, 2),
+                impayes=impayes_list
+            )
+        )
+
+    return results
 
 
 def get_eleve(db: Session, centre_id: int, eleve_id: int) -> Eleve:

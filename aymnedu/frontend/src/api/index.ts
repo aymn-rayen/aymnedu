@@ -56,6 +56,8 @@ export const elevesApi = {
     apiClient.delete(`/eleves/${id}`),
   search: (q: string) =>
     apiClient.get<Eleve[]>('/eleves/search', { params: { q } }).then(r => r.data),
+  quickSearch: (q: string) =>
+    apiClient.get<import('@/types').EleveQuickSummary[]>('/eleves/quick-search', { params: { q } }).then(r => r.data),
 }
 
 // ── Groupes ────────────────────────────────────────────────────────────────

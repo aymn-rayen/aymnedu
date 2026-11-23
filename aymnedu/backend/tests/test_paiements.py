@@ -50,3 +50,43 @@ def test_create_paiement_nonexistent_eleve(client, db_session, create_centre_and
     res = client.post("/api/v1/paiements", json=payload, headers=headers)
     assert res.status_code == 404
     assert "Élève non trouvé" in res.json()["detail"]
+
+
+def test_quick_search_cashier_endpoint(client, db_session, create_centre_and_user):
+    centre, user, headers = create_centre_and_user("Centre Cashier", "directeur@cashier.dz")
+
+    # Create Eleve, Groupe, and Paiement (impayé)
+    eleve = Eleve(centre_id=centre.id, prenom="Amine", nom="Haddad", niveau="4AM", telephone_responsable="0550112233")
+    groupe = Groupe(centre_id=centre.id, nom="Physique BEM", matiere="Physique")
+    db_session.add_all([eleve, groupe])
+    db_session.commit()
+
+    # Link inscription
+    from app.models import InscriptionGroupe
+    db_session.add(InscriptionGroupe(eleve_id=eleve.id, groupe_id=groupe.id))
+
+    # Add unpaid payment
+    paiement = Paiement(
+        centre_id=centre.id,
+        eleve_id=eleve.id,
+        groupe_id=groupe.id,
+        montant=3500.0,
+        montant_verse=2000.0,
+        mois="2026-11",
+        statut=PaiementStatutEnum.partiel
+    )
+    db_session.add(paiement)
+    db_session.commit()
+
+    # Search by "Amine"
+    res = client.get("/api/v1/eleves/quick-search?q=Amine", headers=headers)
+    assert res.status_code == 200
+    data = res.json()
+    assert len(data) == 1
+    found = data[0]
+    assert found["prenom"] == "Amine"
+    assert found["nom"] == "Haddad"
+    assert found["total_reste_du"] == 1500.0
+    assert len(found["impayes"]) == 1
+    assert found["impayes"][0]["reste"] == 1500.0
+    assert found["impayes"][0]["groupe_nom"] == "Physique BEM"

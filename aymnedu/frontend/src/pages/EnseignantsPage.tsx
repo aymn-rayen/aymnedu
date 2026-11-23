@@ -48,7 +48,7 @@ export default function EnseignantsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold text-white">Enseignants</h1>
+          <h1 className="font-heading text-2xl font-bold text-[#1E293B]">Enseignants</h1>
           <p className="text-slate-400 text-sm mt-1">
             {enseignants?.length ?? 0} enseignant{(enseignants?.length ?? 0) > 1 ? 's' : ''} enregistré{(enseignants?.length ?? 0) > 1 ? 's' : ''}
           </p>
@@ -62,7 +62,7 @@ export default function EnseignantsPage() {
       {/* Create Form */}
       {showForm && (
         <div className="card border-primary-500/20 animate-fadeIn">
-          <h2 className="font-heading font-semibold text-white mb-4">Créer un compte enseignant</h2>
+          <h2 className="font-heading font-semibold text-[#1E293B] mb-4">Créer un compte enseignant</h2>
           <p className="text-xs text-slate-400 mb-4">L'enseignant pourra se connecter avec son email et ce mot de passe provisoire.</p>
 
           {error && (
@@ -110,7 +110,7 @@ export default function EnseignantsPage() {
       {/* Teachers list */}
       <div className="card p-0 overflow-hidden">
         <table className="w-full">
-          <thead className="bg-white/2">
+          <thead className="bg-slate-50">
             <tr>
               <th className="table-header">Nom complet</th>
               <th className="table-header">Email</th>
@@ -124,7 +124,7 @@ export default function EnseignantsPage() {
             ) : enseignants && enseignants.length > 0 ? (
               enseignants.map(e => (
                 <tr key={e.id} className="table-row">
-                  <td className="table-cell font-medium text-white flex items-center gap-2">
+                  <td className="table-cell font-medium text-[#1E293B] flex items-center gap-2">
                     <div className="w-7 h-7 rounded-full bg-primary-500/20 border border-primary-500/30 flex items-center justify-center text-primary-400 font-bold text-xs">
                       {e.full_name[0].toUpperCase()}
                     </div>

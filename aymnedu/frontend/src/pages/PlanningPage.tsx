@@ -86,7 +86,7 @@ export default function PlanningPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold text-white">Emplois du Temps</h1>
+          <h1 className="font-heading text-2xl font-bold text-[#1E293B]">Emplois du Temps</h1>
           <p className="text-slate-400 text-sm mt-1">Planning hebdomadaire de toutes les salles</p>
         </div>
         <button onClick={() => setShowForm(v => !v)} className="btn-primary flex items-center gap-2">
@@ -114,7 +114,7 @@ export default function PlanningPage() {
           </div>
           <button
             onClick={() => setFeedback(null)}
-            className="text-slate-400 hover:text-white p-1 rounded-lg transition-colors"
+            className="text-slate-400 hover:text-[#1E293B] p-1 rounded-lg transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -124,7 +124,7 @@ export default function PlanningPage() {
       {/* Create Form */}
       {showForm && (
         <div className="card border-primary-500/20 animate-fadeIn">
-          <h2 className="font-heading font-semibold text-white mb-4">Ajouter une séance au planning</h2>
+          <h2 className="font-heading font-semibold text-[#1E293B] mb-4">Ajouter une séance au planning</h2>
           {(!groupes || groupes.length === 0) && (
             <div className="mb-4 px-4 py-3 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-400 text-sm">
               ⚠️ Vous devez d'abord créer des groupes dans la page "Groupes" avant d'ajouter des séances.

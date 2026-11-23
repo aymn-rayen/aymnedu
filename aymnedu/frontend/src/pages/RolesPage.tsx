@@ -100,7 +100,7 @@ export default function RolesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold text-white flex items-center gap-2">
+          <h1 className="font-heading text-2xl font-bold text-[#1E293B] flex items-center gap-2">
             <Users2 className="w-6 h-6 text-primary-400" />
             Gestion des Accès
           </h1>
@@ -126,7 +126,7 @@ export default function RolesPage() {
             {feedback.type === 'success' ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <AlertTriangle className="w-4 h-4 text-red-400" />}
             <span className="font-medium">{feedback.msg}</span>
           </div>
-          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-white transition-colors">
+          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-[#1E293B] transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -135,7 +135,7 @@ export default function RolesPage() {
       {/* Create Form */}
       {showForm && (
         <div className="card border-primary-500/20 animate-fadeIn">
-          <h2 className="font-heading font-semibold text-white mb-5 flex items-center gap-2">
+          <h2 className="font-heading font-semibold text-[#1E293B] mb-5 flex items-center gap-2">
             <PlusCircle className="w-4 h-4 text-primary-400" />
             Nouvel accès
           </h2>
@@ -154,7 +154,7 @@ export default function RolesPage() {
                       type="button"
                       onClick={() => createForm.setValue('role', r.value as any)}
                       className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border text-xs font-medium transition-all ${
-                        selected ? `${r.color} ring-1 ring-offset-0` : 'bg-white/3 border-white/8 text-slate-500 hover:border-white/20'
+                        selected ? `${r.color} ring-1 ring-offset-0` : 'bg-slate-50 border-[#E2E8F0] text-slate-500 hover:border-blue-300'
                       }`}
                     >
                       <Icon className="w-5 h-5" />
@@ -236,7 +236,7 @@ export default function RolesPage() {
             const Icon = group.icon
             return (
               <div key={group.value} className="card">
-                <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/5">
+                <div className="flex items-center gap-3 mb-4 pb-3 border-b border-[#E2E8F0]">
                   <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-semibold ${group.color}`}>
                     <Icon className="w-4 h-4" />
                     {group.label}
@@ -253,14 +253,14 @@ export default function RolesPage() {
                     {group.users.map(u => (
                       <div
                         key={u.id}
-                        className="flex items-center justify-between px-4 py-3 rounded-xl border border-white/5 hover:border-white/10 transition-colors"
+                        className="flex items-center justify-between px-4 py-3 rounded-xl border border-[#E2E8F0] hover:border-[#E2E8F0] transition-colors"
                       >
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full bg-white/8 flex items-center justify-center text-sm font-bold text-slate-300">
                             {u.full_name[0]?.toUpperCase()}
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-white">{u.full_name}</p>
+                            <p className="text-sm font-medium text-[#1E293B]">{u.full_name}</p>
                             <p className="text-xs text-slate-500">{u.email}</p>
                           </div>
                         </div>
@@ -268,7 +268,7 @@ export default function RolesPage() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => { setResetTarget(u); pwdForm.reset() }}
-                            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-white/10 text-slate-400 hover:text-white hover:border-white/25 transition-all"
+                            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-[#E2E8F0] text-slate-400 hover:text-[#1E293B] hover:border-[#E2E8F0] transition-all"
                             title="Réinitialiser le mot de passe"
                           >
                             <KeyRound className="w-3.5 h-3.5" />
@@ -295,20 +295,20 @@ export default function RolesPage() {
 
       {/* Reset Password Modal */}
       {resetTarget && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#0d1220] border border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl animate-fadeIn">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 w-full max-w-sm shadow-2xl animate-fadeIn">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="font-heading font-semibold text-white flex items-center gap-2">
+              <h3 className="font-heading font-semibold text-[#1E293B] flex items-center gap-2">
                 <KeyRound className="w-4 h-4 text-amber-400" />
                 Réinitialiser le mot de passe
               </h3>
-              <button onClick={() => setResetTarget(null)} className="text-slate-400 hover:text-white p-1 rounded-lg transition-colors">
+              <button onClick={() => setResetTarget(null)} className="text-slate-400 hover:text-[#1E293B] p-1 rounded-lg transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <p className="text-sm text-slate-400 mb-4">
-              Nouveau mot de passe pour <strong className="text-white">{resetTarget.full_name}</strong>
+              Nouveau mot de passe pour <strong className="text-[#1E293B]">{resetTarget.full_name}</strong>
             </p>
 
             <form onSubmit={pwdForm.handleSubmit(d => resetMutation.mutate({ id: resetTarget.id, password: d.password }))} className="space-y-4">

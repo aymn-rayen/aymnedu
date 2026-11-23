@@ -152,7 +152,7 @@ export default function GroupesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold text-white">Gestion des Groupes</h1>
+          <h1 className="font-heading text-2xl font-bold text-[#1E293B]">Gestion des Groupes</h1>
           <p className="text-slate-400 text-sm mt-1">
             {groupes?.length ?? 0} groupe{(groupes?.length ?? 0) > 1 ? 's' : ''} configurés
           </p>
@@ -178,10 +178,10 @@ export default function GroupesPage() {
       {(showForm || editingGroupe) && (
         <div className="card border-primary-500/20 animate-fadeIn">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="font-heading font-semibold text-white">
+            <h2 className="font-heading font-semibold text-[#1E293B]">
               {editingGroupe ? `Modifier le groupe : ${editingGroupe.nom}` : 'Créer un nouveau groupe'}
             </h2>
-            <button onClick={handleCloseForm} className="text-slate-400 hover:text-white">
+            <button onClick={handleCloseForm} className="text-[#64748B] hover:text-[#1E293B]">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -273,7 +273,7 @@ export default function GroupesPage() {
                   <div>
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <h3 className="font-semibold text-white text-sm">{g.nom}</h3>
+                        <h3 className="font-semibold text-[#1E293B] text-sm">{g.nom}</h3>
                         <p className="text-xs text-slate-400 mt-0.5">{g.matiere} · {g.niveau}</p>
                       </div>
                       <div className="flex items-center gap-1">
@@ -295,7 +295,7 @@ export default function GroupesPage() {
                     </div>
 
                     <p className="text-xs text-slate-400 mb-3">
-                      Professeur : <span className="text-white font-medium">{g.enseignant_nom ?? 'Non assigné'}</span>
+                      Professeur : <span className="text-[#1E293B] font-medium">{g.enseignant_nom ?? 'Non assigné'}</span>
                     </p>
 
                     <div className="mb-4">
@@ -305,7 +305,7 @@ export default function GroupesPage() {
                         </span>
                         <span className={pct >= 90 ? 'text-amber-400' : 'text-primary-400'}>{pct}%</span>
                       </div>
-                      <div className="w-full h-1.5 bg-[#1b2542] rounded-full overflow-hidden">
+                      <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                         <div className={`h-full ${colorBar} rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
                       </div>
                     </div>
@@ -335,7 +335,7 @@ export default function GroupesPage() {
 
       {/* Pagination bar */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between px-4 py-3 rounded-xl border border-white/5 bg-white/2">
+        <div className="flex items-center justify-between px-4 py-3 rounded-xl border border-[#E2E8F0] bg-slate-50">
           <span className="text-xs text-slate-400">
             Page {page} sur {totalPages} ({filteredGroupes.length} groupe{filteredGroupes.length > 1 ? 's' : ''})
           </span>
@@ -360,22 +360,22 @@ export default function GroupesPage() {
 
       {/* Modal: Managing Students in Group */}
       {managingElevesGroupe && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0f172a] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-fadeIn">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-xl overflow-hidden animate-fadeIn text-[#1E293B]">
             {/* Modal Header */}
-            <div className="p-6 border-b border-white/10 flex items-center justify-between">
+            <div className="p-6 border-b border-[#E2E8F0] flex items-center justify-between bg-slate-50">
               <div>
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Users className="w-5 h-5 text-primary-400" />
+                <h2 className="text-lg font-bold text-[#1E293B] flex items-center gap-2">
+                  <Users className="w-5 h-5 text-[#2563EB]" />
                   Gestion des Élèves — {managingElevesGroupe.nom}
                 </h2>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-[#64748B] mt-1">
                   {managingElevesGroupe.matiere} · {managingElevesGroupe.niveau} | {groupeEleves?.length ?? 0}/{managingElevesGroupe.capacite_max} élèves inscrits
                 </p>
               </div>
               <button
                 onClick={() => { setManagingElevesGroupe(null); setEleveSearch(''); setDebouncedSearch('') }}
-                className="text-slate-400 hover:text-white p-1 rounded-lg transition-colors"
+                className="text-[#64748B] hover:text-[#1E293B] p-1 rounded-lg transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -385,25 +385,25 @@ export default function GroupesPage() {
             <div className="p-6 overflow-y-auto space-y-6 flex-1">
               {/* Enrolled Students List */}
               <div>
-                <h3 className="text-sm font-semibold text-white mb-3">Élèves actuellement dans ce groupe :</h3>
+                <h3 className="text-sm font-semibold text-[#1E293B] mb-3">Élèves actuellement dans ce groupe :</h3>
                 {isLoadingGroupeEleves ? (
-                  <p className="text-xs text-slate-400">Chargement des élèves...</p>
+                  <p className="text-xs text-[#64748B]">Chargement des élèves...</p>
                 ) : !groupeEleves || groupeEleves.length === 0 ? (
-                  <div className="p-4 bg-white/5 rounded-xl text-center text-xs text-slate-400">
+                  <div className="p-4 bg-slate-50 border border-[#E2E8F0] rounded-xl text-center text-xs text-[#64748B]">
                     Aucun élève inscrit dans ce groupe pour le moment.
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {groupeEleves.map(e => (
-                      <div key={e.id} className="flex items-center justify-between bg-white/5 hover:bg-white/10 p-3 rounded-xl transition-colors">
+                      <div key={e.id} className="flex items-center justify-between bg-slate-50 hover:bg-slate-100 border border-[#E2E8F0] p-3 rounded-xl transition-colors">
                         <div>
-                          <p className="text-sm font-medium text-white">{e.prenom} {e.nom}</p>
-                          <p className="text-xs text-slate-400">{e.niveau} · {e.telephone_responsable}</p>
+                          <p className="text-sm font-medium text-[#1E293B]">{e.prenom} {e.nom}</p>
+                          <p className="text-xs text-[#64748B]">{e.niveau} · {e.telephone_responsable}</p>
                         </div>
                         <button
                           onClick={() => removeEleveMutation.mutate({ groupeId: managingElevesGroupe.id, eleveId: e.id })}
                           disabled={removeEleveMutation.isPending}
-                          className="text-slate-400 hover:text-red-400 text-xs px-2 py-1 rounded hover:bg-red-500/10 transition-colors"
+                          className="text-[#64748B] hover:text-red-600 text-xs px-2 py-1 rounded hover:bg-red-50 transition-colors"
                           title="Retirer du groupe"
                         >
                           Retirer
@@ -415,10 +415,10 @@ export default function GroupesPage() {
               </div>
 
               {/* Add New Students Section */}
-              <div className="border-t border-white/10 pt-4">
-                <h3 className="text-sm font-semibold text-white mb-3">Ajouter un élève au groupe :</h3>
+              <div className="border-t border-[#E2E8F0] pt-4">
+                <h3 className="text-sm font-semibold text-[#1E293B] mb-3">Ajouter un élève au groupe :</h3>
                 <div className="relative mb-3">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748B] pointer-events-none" />
                   <input
                     className="input pl-10 text-xs py-2"
                     placeholder="Taper au moins 2 lettres du nom ou prénom..."
@@ -427,21 +427,21 @@ export default function GroupesPage() {
                     autoComplete="off"
                   />
                   {isSearching && (
-                    <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 animate-spin" />
+                    <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748B] animate-spin" />
                   )}
                 </div>
 
                 {debouncedSearch.length < 2 ? (
-                  <p className="text-xs text-slate-500 italic">✏️ Tapez au moins 2 caractères pour rechercher un élève dans le centre.</p>
+                  <p className="text-xs text-[#64748B] italic">✏️ Tapez au moins 2 caractères pour rechercher un élève dans le centre.</p>
                 ) : isSearching ? (
-                  <p className="text-xs text-slate-500">Recherche en cours...</p>
+                  <p className="text-xs text-[#64748B]">Recherche en cours...</p>
                 ) : availableEleves.length === 0 ? (
-                  <p className="text-xs text-slate-500 italic">Aucun élève trouvé pour «&nbsp;{debouncedSearch}&nbsp;» (ou tous sont déjà inscrits).</p>
+                  <p className="text-xs text-[#64748B] italic">Aucun élève trouvé pour «&nbsp;{debouncedSearch}&nbsp;» (ou tous sont déjà inscrits).</p>
                 ) : (
                   <div className="max-h-48 overflow-y-auto space-y-1 pr-1">
                     {availableEleves.map(e => (
-                      <div key={e.id} className="flex items-center justify-between p-2 hover:bg-white/5 rounded-lg text-xs">
-                        <span className="text-slate-200">{e.prenom} {e.nom} <span className="text-slate-500">({e.niveau})</span></span>
+                      <div key={e.id} className="flex items-center justify-between p-2 hover:bg-slate-50 border border-transparent hover:border-[#E2E8F0] rounded-lg text-xs">
+                        <span className="text-[#1E293B] font-medium">{e.prenom} {e.nom} <span className="text-[#64748B]">({e.niveau})</span></span>
                         <button
                           onClick={() => addEleveMutation.mutate({ groupeId: managingElevesGroupe.id, eleveId: e.id })}
                           disabled={addEleveMutation.isPending || (groupeEleves?.length ?? 0) >= managingElevesGroupe.capacite_max}
@@ -457,7 +457,7 @@ export default function GroupesPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 border-t border-white/10 flex justify-end bg-white/2">
+            <div className="p-4 border-t border-[#E2E8F0] flex justify-end bg-slate-50">
               <button
                 onClick={() => { setManagingElevesGroupe(null); setEleveSearch(''); setDebouncedSearch('') }}
                 className="btn-secondary text-xs px-5"
