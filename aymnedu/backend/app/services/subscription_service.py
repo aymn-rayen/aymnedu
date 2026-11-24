@@ -152,11 +152,11 @@ def activate_subscription_code(db: Session, centre_id: int, code: str) -> Subscr
 
     now = datetime.now()
 
-    # Recherche du coupon en base de données
+    # Recherche et verrouillage atomique du coupon en base de données
     voucher = db.query(LicenseVoucher).filter(
         LicenseVoucher.code == clean_code,
         LicenseVoucher.is_redeemed == False  # noqa: E712
-    ).first()
+    ).with_for_update().first()
 
     if not voucher:
         raise HTTPException(

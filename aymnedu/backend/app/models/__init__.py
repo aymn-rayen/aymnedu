@@ -33,6 +33,13 @@ class PresenceStatutEnum(str, Enum):
     retard = "retard"
 
 
+class VersementModeEnum(str, Enum):
+    especes = "especes"
+    baridimob = "baridimob"
+    cheque = "cheque"
+    virement = "virement"
+
+
 # ── Centre ──────────────────────────────────────────────────────────────────
 class Centre(Base):
     __tablename__ = "centres"
@@ -141,9 +148,9 @@ class Paiement(Base):
     )
 
     id = Column(Integer, primary_key=True, index=True)
-    centre_id = Column(Integer, ForeignKey("centres.id", ondelete="CASCADE"), nullable=False, index=True)
-    eleve_id = Column(Integer, ForeignKey("eleves.id", ondelete="CASCADE"), nullable=False)
-    groupe_id = Column(Integer, ForeignKey("groupes.id", ondelete="CASCADE"), nullable=False)
+    centre_id = Column(Integer, ForeignKey("centres.id", ondelete="RESTRICT"), nullable=False, index=True)
+    eleve_id = Column(Integer, ForeignKey("eleves.id", ondelete="RESTRICT"), nullable=False)
+    groupe_id = Column(Integer, ForeignKey("groupes.id", ondelete="RESTRICT"), nullable=False)
     montant = Column(Numeric(10, 2), nullable=False)         # montant total dû
     montant_verse = Column(Numeric(10, 2), nullable=False, default=0)  # montant déjà encaissé
     mois = Column(String(7), nullable=False)   # ex: "2026-07"
@@ -154,6 +161,25 @@ class Paiement(Base):
 
     eleve = relationship("Eleve", back_populates="paiements")
     groupe = relationship("Groupe")
+    versements = relationship("Versement", back_populates="paiement", cascade="all, delete-orphan", order_by="Versement.id.desc()")
+
+
+# ── Versement (Ligne d'encaissement unitaire & traçabilité de caisse) ─────────
+class Versement(Base):
+    __tablename__ = "versements"
+
+    id = Column(Integer, primary_key=True, index=True)
+    paiement_id = Column(Integer, ForeignKey("paiements.id", ondelete="RESTRICT"), nullable=False, index=True)
+    centre_id = Column(Integer, ForeignKey("centres.id", ondelete="RESTRICT"), nullable=False, index=True)
+    recu_par_user_id = Column(Integer, ForeignKey("utilisateurs.id", ondelete="SET NULL"), nullable=True)
+    montant = Column(Numeric(10, 2), nullable=False)
+    mode_reglement = Column(SAEnum(VersementModeEnum), default="especes", nullable=False)
+    recu_numero = Column(String(64), unique=True, index=True, nullable=False)
+    date_versement = Column(DateTime, server_default=func.now(), nullable=False)
+
+    paiement = relationship("Paiement", back_populates="versements")
+    centre = relationship("Centre")
+    recu_par = relationship("Utilisateur")
 
 
 # ── Présence ─────────────────────────────────────────────────────────────────

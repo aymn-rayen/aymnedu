@@ -43,8 +43,8 @@ def mark_paid(
     db: Session = Depends(get_db),
     user: Utilisateur = Depends(require_role(ROLE_DIR, ROLE_SEC))
 ):
-    """Encaissement total en 1 clic."""
-    return paiement_service.mark_paid(db, user.centre_id, id)
+    """Encaissement total en 1 clic avec traçabilité utilisateur."""
+    return paiement_service.mark_paid(db, user.centre_id, id, user_id=user.id)
 
 
 @router.patch("/{id}/verser", response_model=PaiementOut)
@@ -54,5 +54,12 @@ def verser_montant(
     db: Session = Depends(get_db),
     user: Utilisateur = Depends(require_role(ROLE_DIR, ROLE_SEC))
 ):
-    """Versement partiel ou solde : calcule le reste et met à jour le statut."""
-    return paiement_service.verser(db, user.centre_id, id, body.montant_verse)
+    """Versement partiel ou solde : manipulation Decimal, verrou pessimiste et ligne d'historique."""
+    return paiement_service.verser(
+        db,
+        user.centre_id,
+        id,
+        body.montant_verse,
+        user_id=user.id,
+        mode_reglement=body.mode_reglement or "especes"
+    )

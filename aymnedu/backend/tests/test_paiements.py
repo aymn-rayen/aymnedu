@@ -90,3 +90,66 @@ def test_quick_search_cashier_endpoint(client, db_session, create_centre_and_use
     assert len(found["impayes"]) == 1
     assert found["impayes"][0]["reste"] == 1500.0
     assert found["impayes"][0]["groupe_nom"] == "Physique BEM"
+
+
+def test_versement_partiel_et_complet_audit(client, db_session, create_centre_and_user):
+    from decimal import Decimal
+    from app.models import Versement
+    centre, user, headers = create_centre_and_user("Centre Versement", "caisse@centre.dz")
+
+    eleve = Eleve(centre_id=centre.id, prenom="Karim", nom="Benzema", niveau="2AS")
+    groupe = Groupe(centre_id=centre.id, nom="Français 2AS")
+    db_session.add_all([eleve, groupe])
+    db_session.commit()
+
+    # Create payment of 3000.00
+    res_create = client.post(
+        "/api/v1/paiements",
+        json={"eleve_id": eleve.id, "groupe_id": groupe.id, "montant": 3000.0, "mois": "2026-11"},
+        headers=headers,
+    )
+    assert res_create.status_code == 201
+    p_id = res_create.json()["id"]
+
+    # 1er versement : 1000 DA (espèces)
+    res_v1 = client.patch(
+        f"/api/v1/paiements/{p_id}/verser",
+        json={"montant": 1000.0, "mode_reglement": "especes"},
+        headers=headers,
+    )
+    assert res_v1.status_code == 200
+    v1_data = res_v1.json()
+    assert v1_data["statut"] == "partiel"
+    assert v1_data["montant_verse"] == 1000.0
+    assert len(v1_data["versements"]) == 1
+    recu1 = v1_data["versements"][0]["recu_numero"]
+    assert "REC-" in recu1
+
+    # Check database record for Versement
+    v_rows = db_session.query(Versement).filter(Versement.paiement_id == p_id).all()
+    assert len(v_rows) == 1
+    assert v_rows[0].montant == Decimal("1000.00")
+    assert v_rows[0].recu_par_user_id == user.id
+    assert v_rows[0].centre_id == centre.id
+
+    # 2eme versement : tentative de trop payer (2500 DA alors qu'il reste 2000 DA) -> 422 Unprocessable Entity
+    res_trop = client.patch(
+        f"/api/v1/paiements/{p_id}/verser",
+        json={"montant": 2500.0, "mode_reglement": "especes"},
+        headers=headers,
+    )
+    assert res_trop.status_code == 422
+    assert "dépasse le solde restant" in res_trop.json()["detail"]
+
+    # 2eme versement valide : solde de 2000 DA (baridimob) -> statut payé
+    res_v2 = client.patch(
+        f"/api/v1/paiements/{p_id}/verser",
+        json={"montant": 2000.0, "mode_reglement": "baridimob"},
+        headers=headers,
+    )
+    assert res_v2.status_code == 200
+    v2_data = res_v2.json()
+    assert v2_data["statut"] == "paye"
+    assert v2_data["montant_verse"] == 3000.0
+    assert len(v2_data["versements"]) == 2
+

@@ -222,16 +222,23 @@ class RoleUserInfo(BaseModel):
 
 
 @router.get("/centres/search", response_model=list[CentreSearchResult])
-def search_centres(q: str = "", db: Session = Depends(get_db)):
+@limiter.limit("15/minute")
+def search_centres(request: Request, q: str = "", db: Session = Depends(get_db)):
     """
-    Cherche des centres (écoles) par nom — utilisé dans la page de login
-    pour que l'utilisateur trouve son école rapidement.
+    Cherche des centres (écoles) par nom.
+    Exige au minimum 3 caractères pour éviter l'énumération publique massive de la clientèle.
     """
+    if not q or len(q.strip()) < 3:
+        return []
     from app.models import Centre
-    query = db.query(Centre).filter(Centre.is_active == True)  # noqa: E712
-    if q.strip():
-        query = query.filter(Centre.nom.ilike(f"%{q}%"))
-    return query.order_by(Centre.nom).limit(20).all()
+    clean_q = q.strip()
+    return (
+        db.query(Centre)
+        .filter(Centre.is_active == True, Centre.nom.ilike(f"%{clean_q}%"))  # noqa: E712
+        .order_by(Centre.nom)
+        .limit(10)
+        .all()
+    )
 
 
 @router.get("/centres/{centre_id}/roles", response_model=list[RoleUserInfo])
