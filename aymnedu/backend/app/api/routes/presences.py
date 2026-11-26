@@ -32,3 +32,13 @@ def save_presences(
     user: Utilisateur = Depends(require_role(ROLE_DIR, ROLE_SEC, ROLE_ENS))
 ):
     presence_service.save_presences_batch(db, user.centre_id, items)
+
+
+@router.get("/grille-mensuelle")
+def get_grille_mensuelle(
+    groupe_id: int,
+    mois: str,
+    db: Session = Depends(get_db),
+    user: Utilisateur = Depends(require_role(ROLE_DIR, ROLE_SEC, ROLE_ENS))
+):
+    return presence_service.get_grille_mensuelle(db, user.centre_id, groupe_id, mois)

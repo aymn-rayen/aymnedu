@@ -216,13 +216,36 @@ export interface Paiement {
 
 // ===== Présence =====
 export interface Presence {
-  id: number
+  id?: number | null
   groupe_id: number
   eleve_id: number
   eleve_nom?: string
   date_seance: string
   statut: 'present' | 'absent' | 'retard'
   minutes_retard?: number
+}
+
+export interface EleveGrillePresence {
+  eleve_id: number
+  eleve_nom: string
+  matricule: string
+  telephone?: string | null
+  seances: Record<string, 'present' | 'absent' | 'retard' | null>
+  nb_presents: number
+  nb_absents: number
+  nb_retards: number
+  taux_presence: number
+}
+
+export interface GrilleMensuelle {
+  groupe_id: number
+  groupe_nom: string
+  matiere?: string | null
+  niveau?: string | null
+  mois: string
+  dates: string[]
+  eleves: EleveGrillePresence[]
+  total_eleves: number
 }
 
 // ===== Emploi du Temps =====

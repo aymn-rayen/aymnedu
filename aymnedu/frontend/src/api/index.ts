@@ -110,6 +110,8 @@ export const caisseApi = {
 export const presencesApi = {
   listByGroupe: (groupeId: number, date: string) =>
     apiClient.get<Presence[]>(`/presences`, { params: { groupe_id: groupeId, date } }).then(r => r.data),
+  getGrilleMensuelle: (groupeId: number, mois: string) =>
+    apiClient.get<import('@/types').GrilleMensuelle>(`/presences/grille-mensuelle`, { params: { groupe_id: groupeId, mois } }).then(r => r.data),
   save: (data: Presence[]) =>
     apiClient.post<void>('/presences/batch', data),
 }
