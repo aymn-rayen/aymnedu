@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { groupesApi, presencesApi } from '@/api'
-import { ClipboardCheck, Save, CheckCircle2, AlertTriangle, X, CheckCheck } from 'lucide-react'
+import { ClipboardCheck, Save, CheckCircle2, AlertTriangle, X, CheckCheck, Users, UserPlus } from 'lucide-react'
 import type { Presence } from '@/types'
 
 export default function PresencesPage() {
@@ -73,12 +74,16 @@ export default function PresencesPage() {
       {/* Selectors */}
       <div className="flex gap-3 flex-wrap items-center">
         <select
-          className="input w-auto min-w-[240px]"
+          className="input w-auto min-w-[260px]"
           value={selectedGroupe ?? ''}
           onChange={e => { setSelectedGroupe(Number(e.target.value) || null); setStatuts({}); setFeedback(null) }}
         >
           <option value="">Choisir un groupe...</option>
-          {groupes?.map(g => <option key={g.id} value={g.id}>{g.nom} — {g.matiere}</option>)}
+          {groupes?.map(g => (
+            <option key={g.id} value={g.id}>
+              {g.nom} — {g.matiere} ({g.nombre_eleves ?? 0} élève{(g.nombre_eleves ?? 0) > 1 ? 's' : ''})
+            </option>
+          ))}
         </select>
         <input
           type="date"
@@ -167,7 +172,39 @@ export default function PresencesPage() {
           {isLoading ? (
             <div className="text-slate-500 text-sm text-center py-8">Chargement de la liste…</div>
           ) : presences?.length === 0 ? (
-            <div className="text-slate-500 text-sm text-center py-8">Aucun élève dans ce groupe.</div>
+            <div className="text-center py-10 px-4 space-y-4 rounded-xl border border-dashed border-[#CBD5E1] dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+              <div className="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto">
+                <Users className="w-6 h-6" />
+              </div>
+              <div className="max-w-md mx-auto space-y-1.5">
+                <h3 className="font-semibold text-[#1E293B] text-base">
+                  Aucun élève inscrit dans ce groupe
+                </h3>
+                <p className="text-sm text-slate-500 leading-relaxed">
+                  Votre établissement compte des élèves, mais aucun n'a encore été affecté au groupe{' '}
+                  <strong className="text-[#1E293B]">
+                    {groupes?.find(g => g.id === selectedGroupe)?.nom}
+                  </strong>.
+                  La feuille d'appel affiche uniquement les élèves inscrits à ce cours spécifique.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                <Link
+                  to="/app/groupes"
+                  className="btn-primary flex items-center gap-2 py-2 px-4 text-xs font-medium"
+                >
+                  <Users className="w-4 h-4" />
+                  Affecter des élèves au groupe
+                </Link>
+                <Link
+                  to="/app/eleves"
+                  className="btn-secondary flex items-center gap-2 py-2 px-4 text-xs font-medium"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  Inscrire un élève (Tout-en-un)
+                </Link>
+              </div>
+            </div>
           ) : (
             <div className="space-y-2">
               {presences?.map(p => {
