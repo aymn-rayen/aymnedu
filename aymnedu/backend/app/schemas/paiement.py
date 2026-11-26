@@ -42,6 +42,18 @@ class VersementRequest(BaseModel):
         return self
 
 
+class GenererEcheancesRequest(BaseModel):
+    mois: str = Field(..., pattern=r"^\d{4}-(0[1-9]|1[0-2])$", description="Mois au format YYYY-MM")
+
+
+class GenererEcheancesOut(BaseModel):
+    mois: str
+    creances_creees: int
+    deja_existantes: int
+    montant_total_nouveau: float
+    message: str
+
+
 class PaiementOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int

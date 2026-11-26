@@ -5,7 +5,10 @@ from typing import Optional
 from app.core.database import get_db
 from app.api.routes.auth import require_role
 from app.models import Utilisateur, RoleEnum
-from app.schemas.paiement import PaiementCreate, PaiementOut, VersementRequest
+from app.schemas.paiement import (
+    PaiementCreate, PaiementOut, VersementRequest,
+    GenererEcheancesRequest, GenererEcheancesOut
+)
 from app.services import paiement_service
 
 router = APIRouter(prefix="/paiements", tags=["paiements"])
@@ -63,3 +66,16 @@ def verser_montant(
         user_id=user.id,
         mode_reglement=body.mode_reglement or "especes"
     )
+
+
+@router.post("/generer-mois", response_model=GenererEcheancesOut)
+def generer_echeances_mois(
+    body: GenererEcheancesRequest,
+    db: Session = Depends(get_db),
+    user: Utilisateur = Depends(require_role(ROLE_DIR))
+):
+    """
+    Génération mensuelle des échéances (Réservé au Directeur) :
+    Idempotent : génère les dettes au tarif officiel de chaque groupe pour tous les élèves actifs inscrits.
+    """
+    return paiement_service.generer_echeances_mois(db, user.centre_id, body.mois)

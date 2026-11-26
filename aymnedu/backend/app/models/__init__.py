@@ -40,6 +40,12 @@ class VersementModeEnum(str, Enum):
     virement = "virement"
 
 
+class ClotureStatutEnum(str, Enum):
+    ouverte = "ouverte"
+    en_attente_validation = "en_attente_validation"
+    validee = "validee"
+
+
 # ── Centre ──────────────────────────────────────────────────────────────────
 class Centre(Base):
     __tablename__ = "centres"
@@ -265,4 +271,34 @@ class PlatformAdmin(Base):
     full_name = Column(String(200), nullable=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, server_default=func.now())
+
+
+# ── Clôture de Caisse Journalière ───────────────────────────────────────────
+class ClotureCaisse(Base):
+    __tablename__ = "clotures_caisse"
+    __table_args__ = (
+        UniqueConstraint("centre_id", "date_cloture", name="uq_cloture_centre_date"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    centre_id = Column(Integer, ForeignKey("centres.id", ondelete="RESTRICT"), nullable=False, index=True)
+    date_cloture = Column(Date, nullable=False, index=True)
+    statut = Column(SAEnum(ClotureStatutEnum), default=ClotureStatutEnum.ouverte, nullable=False)
+
+    total_especes_theorique = Column(Numeric(10, 2), default=0.00, nullable=False)
+    total_baridimob_theorique = Column(Numeric(10, 2), default=0.00, nullable=False)
+    total_especes_reel = Column(Numeric(10, 2), nullable=True)
+    ecart = Column(Numeric(10, 2), nullable=True)  # reel - theorique
+    nb_versements = Column(Integer, default=0, nullable=False)
+
+    notes = Column(Text, nullable=True)
+    ferme_par_user_id = Column(Integer, ForeignKey("utilisateurs.id", ondelete="SET NULL"), nullable=True)
+    valide_par_user_id = Column(Integer, ForeignKey("utilisateurs.id", ondelete="SET NULL"), nullable=True)
+    date_fermeture = Column(DateTime, nullable=True)
+    date_validation = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+
+    centre = relationship("Centre")
+    ferme_par = relationship("Utilisateur", foreign_keys=[ferme_par_user_id])
+    valide_par = relationship("Utilisateur", foreign_keys=[valide_par_user_id])
 

@@ -92,6 +92,18 @@ export const paiementsApi = {
     apiClient.patch<Paiement>(`/paiements/${id}/payer`).then(r => r.data),
   verser: (id: number, montant_verse: number) =>
     apiClient.patch<Paiement>(`/paiements/${id}/verser`, { montant_verse }).then(r => r.data),
+  genererMois: (mois: string) =>
+    apiClient.post<import('@/types').GenererEcheancesResponse>('/paiements/generer-mois', { mois }).then(r => r.data),
+}
+
+// ── Caisse Journalière ─────────────────────────────────────────────────────
+export const caisseApi = {
+  getJour: (date_cloture?: string) =>
+    apiClient.get<import('@/types').ClotureCaisseJour>('/caisse/jour', { params: { date_cloture } }).then(r => r.data),
+  fermer: (data: { date_cloture?: string; total_especes_reel: number; notes?: string }) =>
+    apiClient.post<import('@/types').ClotureCaisseJour>('/caisse/fermer', data).then(r => r.data),
+  valider: (data: { date_cloture?: string }) =>
+    apiClient.post<import('@/types').ClotureCaisseJour>('/caisse/valider', data).then(r => r.data),
 }
 
 // ── Présences ──────────────────────────────────────────────────────────────

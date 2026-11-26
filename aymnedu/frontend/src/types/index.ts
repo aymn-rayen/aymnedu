@@ -115,6 +115,44 @@ export interface InscriptionCompleteResponse {
   recu_numero?: string | null
 }
 
+// ===== Génération Mensuelle Échéances =====
+export interface GenererEcheancesResponse {
+  mois: string
+  creances_creees: number
+  deja_existantes: number
+  montant_total_nouveau: number
+  message: string
+}
+
+// ===== Clôture de Caisse Journalière =====
+export interface VersementDetail {
+  id: number
+  recu_numero: string
+  montant: number
+  mode_reglement: string
+  date_versement: string
+  recu_par_nom?: string
+  eleve_nom?: string
+  groupe_nom?: string
+}
+
+export interface ClotureCaisseJour {
+  date_cloture: string
+  statut: 'ouverte' | 'en_attente_validation' | 'validee'
+  total_especes_theorique: number
+  total_baridimob_theorique: number
+  total_theorique: number
+  total_especes_reel?: number | null
+  ecart?: number | null
+  nb_versements: number
+  notes?: string | null
+  ferme_par_nom?: string | null
+  valide_par_nom?: string | null
+  date_fermeture?: string | null
+  date_validation?: string | null
+  versements: VersementDetail[]
+}
+
 // ===== Quick Cashier (Ctrl + K) =====
 export interface EleveGroupeSummary {
   id: number

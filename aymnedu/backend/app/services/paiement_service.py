@@ -209,3 +209,90 @@ def verser(
     db.commit()
     db.refresh(p)
     return _enrich(p)
+
+
+def generer_echeances_mois(
+    db: Session,
+    centre_id: int,
+    mois: str
+) -> dict:
+    """
+    Génération mensuelle des échéances en 1 clic pour le directeur :
+    - Idempotence absolue : ne crée jamais de doublon si l'échéance existe déjà pour (eleve, groupe, mois).
+    - Snapshot immuable : chaque nouvelle dette fige le tarif actuel du groupe (Paiement.montant = groupe.tarif).
+    - Couvre tous les élèves actifs inscrits dans des groupes actifs.
+    """
+    import re
+    if not re.match(r"^\d{4}-(0[1-9]|1[0-2])$", mois):
+        raise HTTPException(status_code=400, detail="Format de mois invalide. Format attendu : YYYY-MM (ex: 2026-11).")
+
+    from app.services.subscription_service import assert_subscription_allows_write
+    assert_subscription_allows_write(db, centre_id)
+
+    from app.models import InscriptionGroupe
+
+    # 1. Récupération des paires (eleve_id, groupe_id) qui ont DÉJÀ une ligne pour ce mois
+    existing_pairs = set(
+        db.query(Paiement.eleve_id, Paiement.groupe_id)
+        .filter(
+            Paiement.centre_id == centre_id,
+            Paiement.mois == mois
+        )
+        .all()
+    )
+
+    # 2. Récupération de tous les élèves actifs inscrits dans des groupes actifs
+    inscriptions = (
+        db.query(InscriptionGroupe)
+        .join(Eleve, InscriptionGroupe.eleve_id == Eleve.id)
+        .join(Groupe, InscriptionGroupe.groupe_id == Groupe.id)
+        .filter(
+            Eleve.centre_id == centre_id,
+            Eleve.deleted_at == None,
+            Eleve.statut == "actif",
+            Groupe.centre_id == centre_id,
+            Groupe.deleted_at == None,
+        )
+        .all()
+    )
+
+    creances_creees = 0
+    deja_existantes = 0
+    montant_total_nouveau = Decimal("0.00")
+
+    for insc in inscriptions:
+        pair = (insc.eleve_id, insc.groupe_id)
+        if pair in existing_pairs:
+            deja_existantes += 1
+            continue
+
+        # Snapshot du tarif du groupe (DZD)
+        tarif_snapshot = Decimal(str(insc.groupe.tarif if insc.groupe.tarif is not None else 2500)).quantize(Decimal("0.01"))
+
+        p = Paiement(
+            centre_id=centre_id,
+            eleve_id=insc.eleve_id,
+            groupe_id=insc.groupe_id,
+            montant=tarif_snapshot,
+            montant_verse=Decimal("0.00"),
+            mois=mois,
+            statut=PaiementStatutEnum.impaye,
+        )
+        db.add(p)
+        creances_creees += 1
+        montant_total_nouveau += tarif_snapshot
+        existing_pairs.add(pair)  # protège contre les éventuels doublons dans la boucle
+
+    db.commit()
+
+    return {
+        "mois": mois,
+        "creances_creees": creances_creees,
+        "deja_existantes": deja_existantes,
+        "montant_total_nouveau": float(montant_total_nouveau),
+        "message": (
+            f"Génération terminée pour {mois} : {creances_creees} nouvelle(s) échéance(s) créée(s) "
+            f"pour un montant total de {float(montant_total_nouveau):.2f} DA. "
+            f"({deja_existantes} échéance(s) déjà à jour)."
+        )
+    }
