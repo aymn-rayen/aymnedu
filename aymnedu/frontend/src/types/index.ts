@@ -94,6 +94,27 @@ export interface CreateEleveRequest {
   niveau: string
 }
 
+export interface InscriptionCompleteRequest {
+  prenom: string
+  nom: string
+  telephone_responsable?: string
+  niveau?: string
+  groupe_ids: number[]
+  encaisser_maintenant: boolean
+  montant_verse?: number
+  mode_reglement?: 'especes' | 'baridimob' | 'cheque' | 'virement' | string
+  mois?: string
+}
+
+export interface InscriptionCompleteResponse {
+  eleve: Eleve
+  groupes_inscrits: EleveGroupeSummary[]
+  total_tarif: number
+  total_verse: number
+  reste_a_payer: number
+  recu_numero?: string | null
+}
+
 // ===== Quick Cashier (Ctrl + K) =====
 export interface EleveGroupeSummary {
   id: number
@@ -133,6 +154,7 @@ export interface Groupe {
   matiere: string
   niveau: string
   capacite_max: number
+  tarif: number
   nombre_eleves: number
   enseignant_id: number | null
   enseignant_nom?: string

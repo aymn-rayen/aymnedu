@@ -34,10 +34,10 @@ class VersementRequest(BaseModel):
     mode_reglement: Optional[str] = "especes"
 
     @model_validator(mode="after")
-    def check_montant(self):
+    def populate_montant_verse(self):
         val = self.montant_verse if self.montant_verse is not None else self.montant
         if val is None or val <= 0:
-            raise ValueError("Le montant versé doit être strictement positif.")
+            raise ValueError("Le montant versé doit être strictement supérieur à zéro.")
         self.montant_verse = val
         return self
 

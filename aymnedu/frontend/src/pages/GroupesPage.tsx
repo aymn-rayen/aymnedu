@@ -15,6 +15,7 @@ const schema = z.object({
   matiere: z.string().min(1, 'Requis'),
   niveau: z.string().min(1, 'Requis'),
   capacite_max: z.coerce.number().min(1, 'Min 1').max(60, 'Max 60'),
+  tarif: z.coerce.number().min(0, 'Min 0 DA').default(2500),
   enseignant_id: z.coerce.number().optional().nullable(),
 })
 type GroupeForm = z.infer<typeof schema>
@@ -127,6 +128,7 @@ export default function GroupesPage() {
     setValue('matiere', groupe.matiere)
     setValue('niveau', groupe.niveau)
     setValue('capacite_max', groupe.capacite_max)
+    setValue('tarif', groupe.tarif ?? 2500)
     setValue('enseignant_id', groupe.enseignant_id ?? null)
   }
 
@@ -216,6 +218,12 @@ export default function GroupesPage() {
               {errors.capacite_max && <p className="text-xs text-red-400 mt-1">{errors.capacite_max.message}</p>}
             </div>
 
+            <div>
+              <label className="label">Tarif mensuel officiel (DZD) *</label>
+              <input className="input font-semibold text-emerald-600" type="number" step="100" defaultValue={2500} {...register('tarif')} />
+              {errors.tarif && <p className="text-xs text-red-400 mt-1">{errors.tarif.message}</p>}
+            </div>
+
             <div className="sm:col-span-2">
               <label className="label">Enseignant assigné (Changer d'enseignant)</label>
               <select className="input" {...register('enseignant_id')}>
@@ -294,9 +302,14 @@ export default function GroupesPage() {
                       </div>
                     </div>
 
-                    <p className="text-xs text-slate-400 mb-3">
-                      Professeur : <span className="text-[#1E293B] font-medium">{g.enseignant_nom ?? 'Non assigné'}</span>
-                    </p>
+                    <div className="flex items-center justify-between text-xs mb-3">
+                      <p className="text-slate-400">
+                        Professeur : <span className="text-[#1E293B] font-medium">{g.enseignant_nom ?? 'Non assigné'}</span>
+                      </p>
+                      <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                        {(g.tarif ?? 2500).toLocaleString('fr-DZ')} DA/mois
+                      </span>
+                    </div>
 
                     <div className="mb-4">
                       <div className="flex justify-between text-xs mb-1.5">

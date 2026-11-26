@@ -3,6 +3,7 @@ from fastapi import HTTPException
 from typing import Optional, List
 from decimal import Decimal
 from datetime import datetime, timezone
+import secrets
 
 from app.models import Paiement, Eleve, Groupe, Versement, PaiementStatutEnum
 from app.schemas.paiement import PaiementCreate, PaiementOut, VersementOut
@@ -183,11 +184,9 @@ def verser(
     p.montant_verse = nouveau_verse
     p.date_paiement = now_utc
 
-    # Génération d'un numéro de reçu unique pour CET encaissement précis (secrets cryptographiques)
-    import secrets
+    # Génération d'un numéro de reçu unique pour CET encaissement précis
     date_code = now_utc.strftime("%Y%m%d")
-    rand_suffix = secrets.token_hex(3).upper()
-    recu_unique = f"REC-{date_code}-{p.id:04d}-{rand_suffix}"
+    recu_unique = f"REC-{date_code}-{p.id:04d}-{secrets.token_hex(3).upper()}"
     p.recu_numero = recu_unique
 
     if nouveau_verse >= montant_total:

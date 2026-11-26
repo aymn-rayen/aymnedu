@@ -111,6 +111,7 @@ class Groupe(Base):
     matiere = Column(String(100))
     niveau = Column(String(50))
     capacite_max = Column(Integer, default=25)
+    tarif = Column(Numeric(10, 2), nullable=False, default=2500.00)
     enseignant_id = Column(Integer, ForeignKey("utilisateurs.id", ondelete="SET NULL"), nullable=True)
     # Soft Delete
     deleted_at = Column(DateTime, nullable=True, default=None, index=True)

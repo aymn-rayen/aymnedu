@@ -5,7 +5,10 @@ from typing import Optional, List
 from app.core.database import get_db
 from app.api.routes.auth import require_role
 from app.models import Utilisateur, RoleEnum
-from app.schemas.eleve import EleveCreate, EleveUpdate, EleveOut, EleveQuickSummary
+from app.schemas.eleve import (
+    EleveCreate, EleveUpdate, EleveOut, EleveQuickSummary,
+    EleveInscriptionCompleteRequest, EleveInscriptionCompleteOut
+)
 from app.services import eleve_service
 
 router = APIRouter(prefix="/eleves", tags=["élèves"])
@@ -60,6 +63,20 @@ def create_eleve(
     user: Utilisateur = Depends(require_role(ROLE_DIR, ROLE_SEC))
 ):
     return eleve_service.create_eleve(db, user.centre_id, body)
+
+
+@router.post("/inscription-complete", response_model=EleveInscriptionCompleteOut, status_code=201)
+def inscription_complete(
+    body: EleveInscriptionCompleteRequest,
+    db: Session = Depends(get_db),
+    user: Utilisateur = Depends(require_role(ROLE_DIR, ROLE_SEC))
+):
+    """
+    Inscription 'Tout-en-un' en une seule transaction SQL atomique.
+    Crée l'élève, l'affecte aux groupes, crée les échéances financières au tarif officiel (snapshot)
+    et encaisse le 1er mois optionnellement avec émission de reçu.
+    """
+    return eleve_service.inscription_complete(db, user.centre_id, user.id, body)
 
 
 @router.get("/{id}", response_model=EleveOut)
